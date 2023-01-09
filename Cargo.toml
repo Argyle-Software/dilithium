@@ -1,0 +1,23 @@
+[package]
+name = "pqc_dilithium"
+version = "0.1.0"
+authors = ["Mitchell <foss@mitchellberry.com>"]
+description = "A post-quantum cryptographic signature scheme"
+edition = "2018"
+
+[dependencies]
+rand = "0.7.3"
+signature = "1.6.1"
+
+[dev-dependencies]
+pqc_core = {version = "0.1.0", features = ["load"]}
+
+[features]
+# default = ["mode2", "KAT"]
+mode2 = []
+mode3 = []
+mode5 = []
+aes = []
+random_signing = []
+
+KAT = []
