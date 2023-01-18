@@ -1,7 +1,5 @@
 // use signature::Signature;
 
-use std::fmt::Debug;
-
 use crate::params::{CRYPTO_SECRETKEYBYTES, CRYPTO_PUBLICKEYBYTES, CRYPTO_BYTES};
 use crate::sign::*;
 
@@ -20,7 +18,7 @@ impl Keypair {
 }
 
 /// Secret key elided
-impl Debug for Keypair {
+impl std::fmt::Debug for Keypair {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {  
     write!(f, "public: {:?}\nsecret: <elided>", self.public)
   }
@@ -38,7 +36,7 @@ pub enum SigError {
 /// # use pqc_dilithium::*;
 /// let keys = keypair();
 /// assert!(keys.public.len() == CRYPTO_PUBLICKEYBYTES);
-/// assert!(keys.secret.len() == CRYPTO_SECRETKEYBYTES);
+/// assert!(keys.expose_secret().len() == CRYPTO_SECRETKEYBYTES);
 /// ```
 pub fn keypair() -> Keypair
 {
@@ -54,7 +52,7 @@ pub fn keypair() -> Keypair
 /// ```no_run
 /// # use pqc_dilithium::*;
 /// # let keys = keypair();
-/// let msg = [0u8; 32];
+/// let msg = "Hello".as_bytes();
 /// let sig = sign(&msg, &keys);
 /// assert!(sig.len() == CRYPTO_BYTES);
 /// ```  

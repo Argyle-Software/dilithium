@@ -26,7 +26,7 @@ impl Default for Poly {
 * Name:        poly_reduce
 *
 * Description: Inplace reduction of all coefficients of polynomial to
-*              representative in [0,2*Q[.
+*              representative in [0,2*Q].
 *
 * Arguments:   - poly *a: pointer to input/output polynomial
 **************************************************/
@@ -249,7 +249,7 @@ pub fn poly_chknorm(a: &Poly, b: i32) -> u8 {
     return 1;
   }
   for i in 0..N {
-    /* Absolute value of centralized representative */
+    // Absolute value of centralized representative 
     t = a.coeffs[i] >> 31;
     t = a.coeffs[i] - (t & 2*a.coeffs[i]);
 
@@ -656,7 +656,7 @@ pub fn polyt0_unpack(r: &mut Poly, a: &[u8]) {
     r.coeffs[8*i+1]  = (a[13*i+1] as i32) >> 5;
     r.coeffs[8*i+1] |= (a[13*i+2] as i32) << 3;
     r.coeffs[8*i+1] |= (a[13*i+3] as i32) << 11;
-    r.coeffs[8*i+1] &= 0x1FFF;
+    r.coeffs[8*i+1] &= 0x1FFF; 
 
     r.coeffs[8*i+2]  = (a[13*i+3] as i32) >> 2;
     r.coeffs[8*i+2] |= (a[13*i+4] as i32) << 6;
@@ -683,7 +683,7 @@ pub fn polyt0_unpack(r: &mut Poly, a: &[u8]) {
 
     r.coeffs[8*i+7]  = (a[13*i+11] as i32) >> 3;
     r.coeffs[8*i+7] |= (a[13*i+12] as i32) << 5;
-    r.coeffs[8*i+7] &= 0x1FFF;
+    r.coeffs[8*i+7] &= 0x1FFF; // TODO: Unnecessary mask?
 
     r.coeffs[8*i+0] = D_SHL - r.coeffs[8*i+0];
     r.coeffs[8*i+1] = D_SHL - r.coeffs[8*i+1];
@@ -775,7 +775,7 @@ pub fn polyz_unpack(r: &mut Poly, a: &[u8]) {
       r.coeffs[4*i+3]  = (a[9*i+6] as i32) >> 6;
       r.coeffs[4*i+3] |= (a[9*i+7] as i32) << 2;
       r.coeffs[4*i+3] |= (a[9*i+8] as i32) << 10;
-      r.coeffs[4*i+3] &= 0x3FFFF;
+      r.coeffs[4*i+3] &= 0x3FFFF; // TODO: Unnecessary mask?
   
       r.coeffs[4*i+0] = GAMMA1_I32 - r.coeffs[4*i+0];
       r.coeffs[4*i+1] = GAMMA1_I32 - r.coeffs[4*i+1];
@@ -792,7 +792,7 @@ pub fn polyz_unpack(r: &mut Poly, a: &[u8]) {
       r.coeffs[2*i+1]  = (a[5*i+2] as i32) >> 4;
       r.coeffs[2*i+1] |= (a[5*i+3] as i32) << 4;
       r.coeffs[2*i+1] |= (a[5*i+4] as i32) << 12;
-      r.coeffs[2*i+0] &= 0xFFFFF;
+      r.coeffs[2*i+0] &= 0xFFFFF; // TODO: Unnecessary mask?
 
       r.coeffs[2*i+0] = GAMMA1_I32 - r.coeffs[2*i+0];
       r.coeffs[2*i+1] = GAMMA1_I32 - r.coeffs[2*i+1];

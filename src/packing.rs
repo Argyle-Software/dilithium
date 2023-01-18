@@ -14,9 +14,7 @@ use crate::{
 *              - const polyveck *t1: pointer to vector t1
 **************************************************/
 pub fn pack_pk(pk: &mut[u8], rho: &[u8], t1: &Polyveck) {
-  for i in 0..SEEDBYTES { //TODO: Copy from slice
-    pk[i] = rho[i];
-  }
+  pk[..SEEDBYTES].copy_from_slice(&rho[..SEEDBYTES]);
   for i in 0..K {
     polyt1_pack(&mut pk[SEEDBYTES+i*POLYT1_PACKEDBYTES..], &t1.vec[i]);
   }
@@ -32,10 +30,7 @@ pub fn pack_pk(pk: &mut[u8], rho: &[u8], t1: &Polyveck) {
 *              - uint8_t pk[]: byte array containing bit-packed pk
 **************************************************/
 pub fn unpack_pk(rho: &mut[u8], t1: &mut Polyveck, pk: &[u8]) {
-  // TODO: Copy from slice
-  for i in 0..SEEDBYTES {
-    rho[i] = pk[i];
-  }
+  rho[..SEEDBYTES].copy_from_slice(&pk[..SEEDBYTES]);
   for i in 0..K {
     polyt1_unpack(&mut t1.vec[i], &pk[SEEDBYTES+i*POLYT1_PACKEDBYTES..])
   }
@@ -212,9 +207,6 @@ pub fn unpack_sig(
   // Decode h
   let mut k = 0usize; 
   for i in 0..K {
-    // for j in 0..N {
-    //   h.vec[i].coeffs[j] = 0; //TODO check and remove
-    // }
     if sig[idx + OMEGA + i] < k as u8 || sig[idx + OMEGA + i] > OMEGA_U8 {
       return Err(SigError::Input)
     }
@@ -228,7 +220,7 @@ pub fn unpack_sig(
     k = sig[idx + OMEGA + i] as usize;
   }
 
-  //Extra indices are zero for strong unforgeability
+  // Extra indices are zero for strong unforgeability
   for j in k..OMEGA {
     if sig[idx + j as usize] > 0 {
       return Err(SigError::Input)

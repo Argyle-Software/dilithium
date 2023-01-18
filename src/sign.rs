@@ -86,8 +86,7 @@ pub fn crypto_sign_keypair(
 **************************************************/
 pub fn crypto_sign_signature(sig: &mut[u8], m: &[u8], sk: &[u8])
 {
-  // In lieu of the seedbuf variable `key` and `mu` are concatenated
-  // to avoid shared mutablity
+  // `key` and `mu` are concatenated
   let mut keymu = [0u8; SEEDBYTES + CRHBYTES];
 
   let mut nonce = 0u16;
@@ -290,7 +289,8 @@ pub fn crypto_sign_verify(
   shake256_absorb(&mut state, &buf, K*POLYW1_PACKEDBYTES);
   shake256_finalize(&mut state);
   shake256_squeeze(&mut c2, SEEDBYTES, &mut state);
-  if c != c2 {
+  // Doesn't require constant time equality check
+  if c != c2 { 
     Err(SigError::Verify)
   } else {
     Ok(())
