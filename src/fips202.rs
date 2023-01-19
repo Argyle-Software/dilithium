@@ -34,15 +34,7 @@ fn rol(a: u64, offset: u64) -> u64
   (a << offset) ^ (a >> (64-offset))
 }
 
-/*************************************************
-* Name:        load64
-*
-* Description: Load 8 bytes into uint64_t in little-endian order
-*
-* Arguments:   - const uint8_t *x: pointer to input byte array
-*
-* Returns the loaded 64-bit unsigned integer
-**************************************************/
+/// Load 8 bytes into uint64_t in little-endian order/
 pub fn load64(x: &[u8]) -> u64
 {
   let mut r = 0u64;
@@ -52,14 +44,8 @@ pub fn load64(x: &[u8]) -> u64
   r
 }
 
-/*************************************************
-* Name:        store64
-*
-* Description: Store a 64-bit integer to array of 8 bytes in little-endian order
-*
-* Arguments:   - uint8_t *x: pointer to the output byte array (allocated)
-*              - uint64_t u: input 64-bit unsigned integer
-**************************************************/
+
+/// Store a 64-bit integer to array of 8 bytes in little-endian order
 pub fn store64(x: &mut[u8], u: u64)
 {
   for i in 0..8 {
@@ -67,7 +53,7 @@ pub fn store64(x: &mut[u8], u: u64)
   }
 }
 
-// Keccak round constants
+/// Keccak round constants
 const KECCAKF_ROUNDCONSTANTS: [u64; NROUNDS] = [
   0x0000000000000001u64,
   0x0000000000008082u64,
@@ -95,11 +81,8 @@ const KECCAKF_ROUNDCONSTANTS: [u64; NROUNDS] = [
   0x8000000080008008u64
 ];
 
-// Name:        KeccakF1600_StatePermute
-//
-// Description: The Keccak F1600 Permutation
-//
-// Arguments:   - uint64_t * state: pointer to in/output Keccak state
+
+/// The Keccak F1600 Permutation
 pub fn keccakf1600_statepermute(state: &mut[u64])
 {
   //copyFromState(A, state)
@@ -348,19 +331,7 @@ pub fn keccakf1600_statepermute(state: &mut[u64])
   state[24] = asu;
 }
 
-/*************************************************
-* Name:        keccak_absorb
-*
-* Description: Absorb step of Keccak; incremental.
-*
-* Arguments:   - uint64_t *s: pointer to Keccak state
-*              - unsigned int pos: position in current block to be absorbed
-*              - unsigned int r: rate in bytes (e.g., 168 for SHAKE128)
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-*
-* Returns new position pos in current block
-**************************************************/
+/// Absorb step of Keccak; incremental.
 fn keccak_absorb(state: &mut KeccakState, r: usize, input: &[u8], mut inlen: usize) {
   let mut idx = 0;
   let mut pos = state.pos;
@@ -382,36 +353,19 @@ fn keccak_absorb(state: &mut KeccakState, r: usize, input: &[u8], mut inlen: usi
   state.pos = i;
 }
 
-/*************************************************
-* Name:        keccak_finalize
-*
-* Description: Finalize absorb step.
-*
-* Arguments:   - uint64_t *s: pointer to Keccak state
-*              - unsigned int pos: position in current block to be absorbed
-*              - unsigned int r: rate in bytes (e.g., 168 for SHAKE128)
-*              - uint8_t p: domain separation byte
-**************************************************/
+
+/// Finalize absorb step.
 fn keccak_finalize(s: &mut[u64; 25], pos: usize, r: usize, p: u8) {
   s[pos/8] ^= (p as u64) << 8*(pos%8);
   s[r/8-1] ^= 1u64 << 63;
 }
 
-/*************************************************
-* Name:        keccak_squeeze
-*
-* Description: Squeeze step of Keccak. Squeezes arbitratrily many bytes.
-*              Modifies the state. Can be called multiple times to keep
-*              squeezing, i.e., is incremental.
-*
-* Arguments:   - uint8_t *out: pointer to output
-*              - size_t outlen: number of bytes to be squeezed (written to out)
-*              - uint64_t *s: pointer to input/output Keccak state
-*              - unsigned int pos: number of bytes in current block already squeezed
-*              - unsigned int r: rate in bytes (e.g., 168 for SHAKE128)
-*
-* Returns new position pos in current block
-**************************************************/
+
+/// Squeeze step of Keccak. Squeezes arbitratrily many bytes.
+///  Modifies the state. Can be called multiple times to keep
+///  squeezing, i.e., is incremental.
+///
+// Returns new position pos in current block
 fn keccak_squeeze(out: &mut[u8], mut outlen: usize, s: &mut[u64; 25], mut pos: usize, r: usize) -> usize 
 {
 
@@ -434,18 +388,8 @@ fn keccak_squeeze(out: &mut[u8], mut outlen: usize, s: &mut[u64; 25], mut pos: u
   return pos;
 }
 
-/*************************************************
-* Name:        keccak_absorb_once
-*
-* Description: Absorb step of Keccak;
-*              non-incremental, starts by zeroeing the state.
-*
-* Arguments:   - uint64_t *s: pointer to (uninitialized) output Keccak state
-*              - unsigned int r: rate in bytes (e.g., 168 for SHAKE128)
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-*              - uint8_t p: domain-separation byte for different Keccak-derived functions
-**************************************************/
+/// Absorb step of Keccak;
+/// non-incremental, starts by zeroeing the state.
 fn keccak_absorb_once(s: &mut[u64; 25], r: usize, input: &[u8], mut inlen: usize, p: u8)
 {
   s.fill(0);
@@ -469,19 +413,11 @@ fn keccak_absorb_once(s: &mut[u64; 25], r: usize, input: &[u8], mut inlen: usize
 
 
 
-/*************************************************
-* Name:        keccak_squeezeblocks
-*
-* Description: Squeeze step of Keccak. Squeezes full blocks of r bytes each.
-*              Modifies the state. Can be called multiple times to keep
-*              squeezing, i.e., is incremental. Assumes zero bytes of current
-*              block have already been squeezed.
-*
-* Arguments:   - uint8_t *out: pointer to output blocks
-*              - size_t nblocks: number of blocks to be squeezed (written to out)
-*              - uint64_t *s: pointer to input/output Keccak state
-*              - unsigned int r: rate in bytes (e.g., 168 for SHAKE128)
-**************************************************/
+
+/// Squeeze step of Keccak. Squeezes full blocks of r bytes each.
+///  Modifies the state. Can be called multiple times to keep
+///  squeezing, i.e., is incremental. Assumes zero bytes of current
+///  block have already been squeezed.
 fn keccak_squeezeblocks(out: &mut[u8], mut nblocks: usize, s: &mut [u64], r: usize)
 {
   let mut idx = 0usize;
@@ -495,164 +431,78 @@ fn keccak_squeezeblocks(out: &mut[u8], mut nblocks: usize, s: &mut [u64], r: usi
   }
 }
 
-/*************************************************
-* Name:        shake128_absorb
-*
-* Description: Absorb step of the SHAKE128 XOF; incremental.
-*
-* Arguments:   - keccak_state *state: pointer to (initialized) output Keccak state
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-**************************************************/
+/// Description: Absorb step of the SHAKE128 XOF; incremental.
 pub fn shake128_absorb(state: &mut KeccakState, input: &[u8], inlen: usize)
 {
   keccak_absorb(state, SHAKE128_RATE, input, inlen);
 }
 
-/*************************************************
-* Name:        shake128_finalize
-*
-* Description: Finalize absorb step of the SHAKE128 XOF.
-*
-* Arguments:   - keccak_state *state: pointer to Keccak state
-**************************************************/
+/// Finalize absorb step of the SHAKE128 XOF.
 pub fn shake128_finalize(state: &mut KeccakState)
 {
   keccak_finalize(&mut state.s, state.pos as usize, SHAKE128_RATE, 0x1F);
   state.pos = SHAKE128_RATE;
 }
 
-/*************************************************
-* Name:        shake128_squeeze
-*
-* Description: Squeeze step of SHAKE128 XOF. Squeezes arbitraily many
-*              bytes. Can be called multiple times to keep squeezing.
-*
-* Arguments:   - uint8_t *out: pointer to output blocks
-*              - size_t outlen : number of bytes to be squeezed (written to output)
-*              - keccak_state *s: pointer to input/output Keccak state
-**************************************************/
+/// Description: Squeeze step of SHAKE128 XOF. Squeezes arbitraily many
+/// bytes. Can be called multiple times to keep squeezing.
 pub fn shake128_squeeze(out: &mut[u8], outlen: usize, state: &mut KeccakState)
 {
   state.pos = keccak_squeeze(out, outlen, &mut state.s, state.pos, SHAKE128_RATE);
 }
 
-/*************************************************
-* Name:        shake128_absorb_once
-*
-* Description: Initialize, absorb into and finalize SHAKE128 XOF; non-incremental.
-*
-* Arguments:   - keccak_state *state: pointer to (uninitialized) output Keccak state
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-**************************************************/
+/// Description: Initialize, absorb into and finalize SHAKE128 XOF; non-incremental.
 pub fn shake128_absorb_once(state: &mut KeccakState, input :&[u8], inlen: usize)
 {
   keccak_absorb_once(&mut state.s, SHAKE128_RATE, input, inlen, 0x1F);
   state.pos = SHAKE128_RATE;
 }
 
-/*************************************************
-* Name:        shake128_squeezeblocks
-*
-* Description: Squeeze step of SHAKE128 XOF. Squeezes full blocks of
-*              SHAKE128_RATE bytes each. Can be called multiple times
-*              to keep squeezing. Assumes new block has not yet been
-*              started (state->pos = SHAKE128_RATE).
-*
-* Arguments:   - uint8_t *out: pointer to output blocks
-*              - size_t nblocks: number of blocks to be squeezed (written to output)
-*              - keccak_state *s: pointer to input/output Keccak state
-**************************************************/
+/// Squeeze step of SHAKE128 XOF. Squeezes full blocks of
+///  SHAKE128_RATE bytes each. Can be called multiple times
+///  to keep squeezing. Assumes new block has not yet been
+///  started (state->pos = SHAKE128_RATE).
 pub fn shake128_squeezeblocks(output: &mut[u8], nblocks: usize, s: &mut KeccakState)
 {
   keccak_squeezeblocks(output, nblocks, &mut s.s, SHAKE128_RATE);
 }
 
-/*************************************************
-* Name:        shake256_absorb
-*
-* Description: Absorb step of the SHAKE256 XOF; incremental.
-*
-* Arguments:   - keccak_state *state: pointer to (initialized) output Keccak state
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-**************************************************/
+/// Absorb step of the SHAKE256 XOF; incremental.
 pub fn shake256_absorb(state: &mut KeccakState, input: &[u8], inlen: usize)
 {
   keccak_absorb(state, SHAKE256_RATE, input, inlen);
 }
 
-/*************************************************
-* Name:        shake256_finalize
-*
-* Description: Finalize absorb step of the SHAKE256 XOF.
-*
-* Arguments:   - keccak_state *state: pointer to Keccak state
-**************************************************/
+/// Finalize absorb step of the SHAKE256 XOF.*/
 pub fn shake256_finalize(state: &mut KeccakState)
 {
   keccak_finalize(&mut state.s, state.pos, SHAKE256_RATE, 0x1F);
   state.pos = SHAKE256_RATE;
 }
 
-/*************************************************
-* Name:        shake256_squeeze
-*
-* Description: Squeeze step of SHAKE256 XOF. Squeezes arbitraily many
-*              bytes. Can be called multiple times to keep squeezing.
-*
-* Arguments:   - uint8_t *out: pointer to output blocks
-*              - size_t outlen : number of bytes to be squeezed (written to output)
-*              - keccak_state *s: pointer to input/output Keccak state
-**************************************************/
+///Squeeze step of SHAKE256 XOF. Squeezes arbitraily many
+/// bytes. Can be called multiple times to keep squeezing.
 pub fn shake256_squeeze(out: &mut[u8], outlen: usize, state: &mut KeccakState)
 {
   state.pos = keccak_squeeze(out, outlen, &mut state.s, state.pos, SHAKE256_RATE);
 }
-
-/*************************************************
-* Name:        shake256_absorb_once
-*
-* Description: Initialize, absorb into and finalize SHAKE256 XOF; non-incremental.
-*
-* Arguments:   - keccak_state *state: pointer to (uninitialized) output Keccak state
-*              - const uint8_t *in: pointer to input to be absorbed into s
-*              - size_t inlen: length of input in bytes
-**************************************************/
+/// Initialize, absorb into and finalize SHAKE256 XOF; non-incremental.
 pub fn shake256_absorb_once(state: &mut KeccakState, input :&[u8], inlen: usize)
 {
   keccak_absorb_once(&mut state.s, SHAKE256_RATE, input, inlen, 0x1F);
   state.pos = SHAKE256_RATE;
 }
 
-/*************************************************
-* Name:        shake256_squeezeblocks
-*
-* Description: Squeeze step of SHAKE256 XOF. Squeezes full blocks of
-*              SHAKE256_RATE bytes each. Can be called multiple times
-*              to keep squeezing. Assumes next block has not yet been
-*              started (state.pos = SHAKE256_RATE).
-*
-* Arguments:   - uint8_t *out: pointer to output blocks
-*              - size_t nblocks: number of blocks to be squeezed (written to output)
-*              - keccak_state *s: pointer to input/output Keccak state
-**************************************************/
+/// Squeeze step of SHAKE256 XOF. Squeezes full blocks of
+///              SHAKE256_RATE bytes each. Can be called multiple times
+///              to keep squeezing. Assumes next block has not yet been
+///              started (state.pos = SHAKE256_RATE).
 pub fn shake256_squeezeblocks(out: &mut[u8], nblocks: usize, state: &mut KeccakState)
 {
   keccak_squeezeblocks(out, nblocks, &mut state.s, SHAKE256_RATE);
 }
 
-/*************************************************
-* Name:        shake128
-*
-* Description: SHAKE128 XOF with non-incremental API
-*
-* Arguments:   - uint8_t *out: pointer to output
-*              - size_t outlen: requested output length in bytes
-*              - const uint8_t *in: pointer to input
-*              - size_t inlen: length of input in bytes
-**************************************************/
+/// SHAKE128 XOF with non-incremental API
 pub fn shake128(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
 {
   let mut state = KeccakState::default();
@@ -665,16 +515,7 @@ pub fn shake128(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
   shake128_squeeze(&mut output[idx..], outlen, &mut state);
 }
 
-
-
-// Name:        shake256
-//
-// Description: SHAKE256 XOF with non-incremental API
-//
-// Arguments:   - unsigned char *output:      pointer to output
-//              - unsigned long long outlen:  requested output length in bytes
-//              - const unsigned char *input: pointer to input
-//               - unsigned long long inlen:   length of input in bytes
+/// SHAKE256 XOF with non-incremental API
 pub fn shake256(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
 {
   let mut state = KeccakState::default();
@@ -687,13 +528,7 @@ pub fn shake256(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
   shake256_squeeze(&mut output[idx..], outlen, &mut state);
 }
 
-// Name:        sha3_256
-//
-// Description: SHA3-256 with non-incremental API
-//
-// Arguments:   - unsigned char *output:      pointer to output (32 bytes)
-//              - const unsigned char *input: pointer to input
-//              - unsigned long long inlen:   length of input in bytes
+/// SHA3-256 with non-incremental API
 pub fn sha3_256(output: &mut [u8], input: &[u8], inlen: usize)
 {
   let mut s =[0u64; 25];
@@ -704,14 +539,7 @@ pub fn sha3_256(output: &mut [u8], input: &[u8], inlen: usize)
   }
 }
 
-
-// Name:        sha3_512
-//
-// Description: SHA3-512 with non-incremental API
-//
-// Arguments:   - unsigned char *output:      pointer to output (64 bytes)
-//              - const unsigned char *input: pointer to input
-//              - unsigned long long inlen:   length of input in bytes
+/// SHA3-512 with non-incremental API
 pub fn sha3_512(output: &mut [u8], input: &[u8], inlen: usize) 
 {
   let mut s =[0u64; 25];

@@ -4,15 +4,7 @@ use crate::{
   poly::*, SigError
 };
 
-/*************************************************
-* Name:        pack_pk
-*
-* Description: Bit-pack public key pk = (rho, t1).
-*
-* Arguments:   - uint8_t pk[]: output byte array
-*              - const uint8_t rho[]: byte array containing rho
-*              - const polyveck *t1: pointer to vector t1
-**************************************************/
+/// Bit-pack public key pk = (rho, t1).
 pub fn pack_pk(pk: &mut[u8], rho: &[u8], t1: &Polyveck) {
   pk[..SEEDBYTES].copy_from_slice(&rho[..SEEDBYTES]);
   for i in 0..K {
@@ -20,15 +12,7 @@ pub fn pack_pk(pk: &mut[u8], rho: &[u8], t1: &Polyveck) {
   }
 }
 
-/*************************************************
-* Name:        unpack_pk
-*
-* Description: Unpack public key pk = (rho, t1).
-*
-* Arguments:   - const uint8_t rho[]: output byte array for rho
-*              - const polyveck *t1: pointer to output vector t1
-*              - uint8_t pk[]: byte array containing bit-packed pk
-**************************************************/
+/// Unpack public key pk = (rho, t1).
 pub fn unpack_pk(rho: &mut[u8], t1: &mut Polyveck, pk: &[u8]) {
   rho[..SEEDBYTES].copy_from_slice(&pk[..SEEDBYTES]);
   for i in 0..K {
@@ -36,24 +20,12 @@ pub fn unpack_pk(rho: &mut[u8], t1: &mut Polyveck, pk: &[u8]) {
   }
 }
 
-/*************************************************
-* Name:        pack_sk
-*
-* Description: Bit-pack secret key sk = (rho, key, tr, s1, s2, t0).
-*
-* Arguments:   - uint8_t sk[]: output byte array
-*              - const uint8_t rho[]: byte array containing rho
-*              - const uint8_t key[]: byte array containing key
-*              - const uint8_t tr[]: byte array containing tr
-*              - const polyvecl *s1: pointer to vector s1
-*              - const polyveck *s2: pointer to vector s2
-*              - const polyveck *t0: pointer to vector t0
-**************************************************/
+/// Bit-pack secret key sk = (rho, key, tr, s1, s2, t0).
 pub fn pack_sk(
-  sk: &mut[u8], 
-  rho: &[u8], 
+  sk: &mut[u8],
+  rho: &[u8],
   tr: &[u8],
-  key: &[u8], 
+  key: &[u8],
   t0: &Polyveck,
   s1: &Polyvecl,
   s2: &Polyveck
@@ -85,19 +57,7 @@ pub fn pack_sk(
   }
 }
 
-/*************************************************
-* Name:        unpack_sk
-*
-* Description: Unpack secret key sk = (rho, key, tr, s1, s2, t0).
-*
-* Arguments:   - const uint8_t rho[]: output byte array for rho
-*              - const uint8_t key[]: output byte array for key
-*              - const uint8_t tr[]: output byte array for tr
-*              - const polyvecl *s1: pointer to output vector s1
-*              - const polyveck *s2: pointer to output vector s2
-*              - const polyveck *r0: pointer to output vector t0
-*              - uint8_t sk[]: byte array containing bit-packed sk
-**************************************************/
+/// Unpack secret key sk = (rho, key, tr, s1, s2, t0).
 pub fn unpack_sk(
   rho: &mut[u8],
   tr: &mut[u8],
@@ -125,7 +85,7 @@ pub fn unpack_sk(
   idx += L*POLYETA_PACKEDBYTES;
 
   for i in 0..K {
-    polyeta_unpack(&mut s2.vec[i], &sk[idx+i*POLYETA_PACKEDBYTES..]);    
+    polyeta_unpack(&mut s2.vec[i], &sk[idx+i*POLYETA_PACKEDBYTES..]);
   }
   idx += K*POLYETA_PACKEDBYTES;
 
@@ -134,16 +94,7 @@ pub fn unpack_sk(
   }
 }
 
-/*************************************************
-* Name:        pack_sig
-*
-* Description: Bit-pack signature sig = (c, z, h).
-*
-* Arguments:   - uint8_t sig[]: output byte array
-*              - const uint8_t *c: pointer to challenge hash length SEEDBYTES
-*              - const polyvecl *z: pointer to vector z
-*              - const polyveck *h: pointer to hint vector h
-**************************************************/
+/// Bit-pack signature sig = (c, z, h).
 pub fn pack_sig(sig: &mut[u8], c: Option< &[u8]>, z: &Polyvecl, h: &Polyveck) {
 
 
@@ -174,25 +125,13 @@ pub fn pack_sig(sig: &mut[u8], c: Option< &[u8]>, z: &Polyvecl, h: &Polyveck) {
   }
 }
 
-/*************************************************
-* Name:        unpack_sig
-*
-* Description: Unpack signature sig = (z, h, c).
-*
-* Arguments:   - polyvecl *z: pointer to output vector z
-*              - polyveck *h: pointer to output hint vector h
-*              - poly *c: pointer to output challenge polynomial
-*              - const uint8_t sig[]: byte array containing
-*                bit-packed signature
-*
-* Returns 1 in case of malformed signature; otherwise 0.
-**************************************************/
+/// Unpack signature sig = (z, h, c).
 pub fn unpack_sig(
-  c: &mut[u8], 
-  z: &mut Polyvecl, 
-  h: &mut Polyveck, 
+  c: &mut[u8],
+  z: &mut Polyvecl,
+  h: &mut Polyveck,
   sig: &[u8]
-) -> Result<(), SigError> 
+) -> Result<(), SigError>
 {
   let mut idx = 0usize;
 
@@ -205,7 +144,7 @@ pub fn unpack_sig(
   idx += L * POLYZ_PACKEDBYTES;
 
   // Decode h
-  let mut k = 0usize; 
+  let mut k = 0usize;
   for i in 0..K {
     if sig[idx + OMEGA + i] < k as u8 || sig[idx + OMEGA + i] > OMEGA_U8 {
       return Err(SigError::Input)

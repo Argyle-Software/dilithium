@@ -5,7 +5,7 @@ use std::io::{prelude::*, BufReader};
 use pqc_dilithium::SEEDBYTES;
 
 
-// Known Answer Tests
+/// Known Answer Tests
 #[derive(Debug, Clone)]
 pub struct Kat {
   pub seed: Vec<u8>,
@@ -17,7 +17,7 @@ pub struct Kat {
   pub sm: Vec<u8>,
 }
 
-// Converts string octuples from tvec files into Kat structs
+/// Converts string octuples from tvec files into Kat structs
 impl From<&[String]> for Kat {
   fn from(kat: &[String]) -> Self {
     // Extract values
@@ -43,7 +43,7 @@ impl From<&[String]> for Kat {
   }
 }
 
-// KATs path
+/// KATs path
 fn kat_filepath() -> PathBuf {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   path.extend(&["tests"]);
@@ -53,7 +53,7 @@ fn kat_filepath() -> PathBuf {
   path
 }
 
-// KATs path
+/// KATs path
 fn buf_filepath() -> PathBuf {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   path.extend(&["tests"]);
@@ -80,7 +80,7 @@ fn parse_kats() -> Vec<String> {
     .collect()
 }
 
-// Packs chunks of lines into Kat structs 
+/// Packs chunks of lines into Kat structs 
 pub fn kats() -> Vec<Kat> {
   let lines = parse_kats();
   let kats = lines[2..].chunks_exact(9);  
@@ -89,7 +89,7 @@ pub fn kats() -> Vec<Kat> {
 }
 
 
-// Decodes hex string into a vector of bytes
+/// Decodes hex string into a vector of bytes
 pub fn decode_hex(s: &str) -> Vec<u8> {
   (0..s.len())
     .step_by(2)

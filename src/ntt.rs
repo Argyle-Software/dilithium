@@ -36,12 +36,12 @@ pub const ZETAS: [i32; N] = [
   -554416,  3919660,   -48306, -1362209,  3937738,  1400424,  -846154,  1976782
 ];
 
-// Name:        ntt
+/// Name:        ntt
 //
-// Description: Forward NTT, in-place. No modular reduction is performed after
-//              additions or subtractions. Output vector is in bitreversed order.
+/// Forward NTT, in-place. No modular reduction is performed after
+///              additions or subtractions. Output vector is in bitreversed order.
 //
-// Arguments: - uint32_t p[N]: input/output coefficient array
+/// Arguments: - uint32_t p[N]: input/output coefficient array
 pub fn ntt(a: &mut[i32])
 {
   let mut j;
@@ -67,15 +67,15 @@ pub fn ntt(a: &mut[i32])
   }
 }
 
-// Name:        invntt
+/// Name:        invntt
 //
-// Description: Inverse NTT and multiplication by Montgomery factor 2^32.
-//              In-place. No modular reductions after additions or
-//              subtractions; input coefficients need to be smaller than
-//              Q in absolute value. Output coefficient are smaller than Q in
-//              absolute value.
+/// Inverse NTT and multiplication by Montgomery factor 2^32.
+///              In-place. No modular reductions after additions or
+///              subtractions; input coefficients need to be smaller than
+///              Q in absolute value. Output coefficient are smaller than Q in
+///              absolute value.
 //
-// Arguments:   - uint32_t p[N]: input/output coefficient array
+/// Arguments:   - uint32_t p[N]: input/output coefficient array
 pub fn invntt_tomont(a: &mut[i32]) 
 {
   let mut j;
