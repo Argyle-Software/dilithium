@@ -1,13 +1,15 @@
+
+
 #[cfg(feature = "mode2")]
 mod mode_2;
-#[cfg(feature = "mode3")]
+#[cfg(not(any(feature = "mode2", feature = "mode5")))]
 mod mode_3;
 #[cfg(feature = "mode5")]
 mod mode_5;
 
 #[cfg(feature = "mode2")]
 pub use mode_2::*;
-#[cfg(feature = "mode3")]
+#[cfg(not(any(feature = "mode2", feature = "mode5")))]
 pub use mode_3::*;
 #[cfg(feature = "mode5")]
 pub use mode_5::*;
@@ -34,7 +36,7 @@ pub const POLYW1_PACKEDBYTES: usize = if cfg!(feature = "mode2") {
   128
 };
 
-pub const POLYETA_PACKEDBYTES: usize = if cfg!(feature = "mode3") {
+pub const POLYETA_PACKEDBYTES: usize = if cfg!(not(any(feature = "mode2", feature = "mode5"))) {
   128
 } else {
   96

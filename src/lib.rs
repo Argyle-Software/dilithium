@@ -1,3 +1,4 @@
+#[cfg(feature = "aes")]
 mod aes256ctr;
 mod api;
 // #[cfg(not(feature = "aes"))]

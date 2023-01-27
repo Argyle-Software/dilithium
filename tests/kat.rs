@@ -1,16 +1,17 @@
+#![cfg(feature = "KAT")]
+
 use std::path::PathBuf;
 use pqc_core::load::*;
 use pqc_dilithium::*;
 
 const MODE: u8 = if cfg!(feature = "mode2") { 2 } 
   else if 
-    cfg!(feature = "mode3") { 3 } 
-  else { 5 };
+    cfg!(feature = "mode5") { 5 } 
+  else { 3 };
 
 const AES: &str = if cfg!(feature = "aes") {"-AES"} else {""};
 
 #[test]
-#[cfg(feature = "KAT")]
 fn keypair() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);
@@ -28,7 +29,6 @@ fn keypair() {
 } 
 
 #[test]
-#[cfg(feature = "KAT")]
 pub fn sign() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);
@@ -44,7 +44,6 @@ pub fn sign() {
 }
 
 #[test]
-#[cfg(feature = "KAT")]
 pub fn verify() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);

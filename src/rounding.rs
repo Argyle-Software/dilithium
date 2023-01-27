@@ -53,7 +53,7 @@ pub fn use_hint(a: i32, hint: u8) -> i32 {
     return a1
   }
 
-  if GAMMA2 == (Q-1)/32 { // TODO: Compile time
+  if GAMMA2 == (Q-1)/32 { 
     if a0 > 0 {
       return (a1 + 1) & 15;
     }

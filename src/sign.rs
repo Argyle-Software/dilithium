@@ -23,7 +23,6 @@ pub fn crypto_sign_keypair(
   pk: &mut[u8], sk: &mut[u8], seed: Option<&[u8]>
 ) -> u8 
 {
-  //TODO: Compile time cfg(test)
   let mut init_seed = [0u8; SEEDBYTES];
   match seed {
     Some(x) => init_seed.copy_from_slice(x),

@@ -1,19 +1,20 @@
 [package]
 name = "pqc_dilithium"
 version = "0.1.0"
-authors = ["Mitchell <foss@mitchellberry.com>"]
-description = "A post-quantum cryptographic signature scheme"
+authors = ["Mitchell Berry <foss@mitchellberry.com>"]
+description = "A post-quantum cryptographic signature scheme based on the hardness of lattice problems over module lattices"
 edition = "2018"
+categories = ["cryptography"]
+keywords = ["signature", "post-quantum", "signing"]
 
 [dependencies]
 rand = "0.7.3"
-signature = "1.6.1"
 
 [dev-dependencies]
 pqc_core = {version = "0.1.0", features = ["load"]}
 
+# By default this library uses mode3, also called Dilithium3
 [features]
-# default = ["mode2", "KAT"]
 mode2 = []
 mode3 = []
 mode5 = []

@@ -1,8 +1,8 @@
 #![allow(clippy::needless_range_loop)]
+
+#[cfg(not(feature = "aes"))]
 pub const SHAKE128_RATE: usize = 168;
 pub const SHAKE256_RATE: usize = 136;
-pub const SHA3_256_RATE: usize = 136;
-pub const SHA3_512_RATE: usize =  72;
 
 const NROUNDS: usize = 24;
 
@@ -432,29 +432,17 @@ fn keccak_squeezeblocks(out: &mut[u8], mut nblocks: usize, s: &mut [u64], r: usi
 }
 
 /// Description: Absorb step of the SHAKE128 XOF; incremental.
+#[cfg(not(feature = "aes"))]
 pub fn shake128_absorb(state: &mut KeccakState, input: &[u8], inlen: usize)
 {
   keccak_absorb(state, SHAKE128_RATE, input, inlen);
 }
 
 /// Finalize absorb step of the SHAKE128 XOF.
+#[cfg(not(feature = "aes"))]
 pub fn shake128_finalize(state: &mut KeccakState)
 {
   keccak_finalize(&mut state.s, state.pos as usize, SHAKE128_RATE, 0x1F);
-  state.pos = SHAKE128_RATE;
-}
-
-/// Description: Squeeze step of SHAKE128 XOF. Squeezes arbitraily many
-/// bytes. Can be called multiple times to keep squeezing.
-pub fn shake128_squeeze(out: &mut[u8], outlen: usize, state: &mut KeccakState)
-{
-  state.pos = keccak_squeeze(out, outlen, &mut state.s, state.pos, SHAKE128_RATE);
-}
-
-/// Description: Initialize, absorb into and finalize SHAKE128 XOF; non-incremental.
-pub fn shake128_absorb_once(state: &mut KeccakState, input :&[u8], inlen: usize)
-{
-  keccak_absorb_once(&mut state.s, SHAKE128_RATE, input, inlen, 0x1F);
   state.pos = SHAKE128_RATE;
 }
 
@@ -462,6 +450,7 @@ pub fn shake128_absorb_once(state: &mut KeccakState, input :&[u8], inlen: usize)
 ///  SHAKE128_RATE bytes each. Can be called multiple times
 ///  to keep squeezing. Assumes new block has not yet been
 ///  started (state->pos = SHAKE128_RATE).
+#[cfg(not(feature = "aes"))]
 pub fn shake128_squeezeblocks(output: &mut[u8], nblocks: usize, s: &mut KeccakState)
 {
   keccak_squeezeblocks(output, nblocks, &mut s.s, SHAKE128_RATE);
@@ -502,18 +491,6 @@ pub fn shake256_squeezeblocks(out: &mut[u8], nblocks: usize, state: &mut KeccakS
   keccak_squeezeblocks(out, nblocks, &mut state.s, SHAKE256_RATE);
 }
 
-/// SHAKE128 XOF with non-incremental API
-pub fn shake128(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
-{
-  let mut state = KeccakState::default();
-
-  shake128_absorb_once(&mut state, input, inlen);
-  let nblocks = outlen / SHAKE128_RATE;
-  shake128_squeezeblocks(output, nblocks, &mut state);
-  outlen -= nblocks*SHAKE128_RATE;
-  let idx = nblocks*SHAKE128_RATE;
-  shake128_squeeze(&mut output[idx..], outlen, &mut state);
-}
 
 /// SHAKE256 XOF with non-incremental API
 pub fn shake256(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
@@ -526,27 +503,5 @@ pub fn shake256(output: &mut[u8], mut outlen: usize, input: &[u8], inlen: usize)
   outlen -= nblocks * SHAKE256_RATE;
   let idx = nblocks * SHAKE256_RATE;
   shake256_squeeze(&mut output[idx..], outlen, &mut state);
-}
-
-/// SHA3-256 with non-incremental API
-pub fn sha3_256(output: &mut [u8], input: &[u8], inlen: usize)
-{
-  let mut s =[0u64; 25];
-  keccak_absorb_once(&mut s, SHA3_256_RATE, input, inlen, 0x06);
-  keccakf1600_statepermute(&mut s);
-  for i in 0..4 {
-    store64(&mut output[8*i..],s[i]);
-  }
-}
-
-/// SHA3-512 with non-incremental API
-pub fn sha3_512(output: &mut [u8], input: &[u8], inlen: usize) 
-{
-  let mut s =[0u64; 25];
-  keccak_absorb_once(&mut s, SHA3_512_RATE, input, inlen, 0x06);
-  keccakf1600_statepermute(&mut s);
-  for i in 0..8 {
-    store64(&mut output[8*i..],s[i]);
-  }
 }
 

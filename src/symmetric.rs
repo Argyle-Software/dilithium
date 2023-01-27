@@ -1,7 +1,8 @@
 use crate::params::CRHBYTES;
-
-use crate::aes256ctr::*;
 use crate::fips202::*;
+
+#[cfg(feature = "aes")]
+use crate::aes256ctr::*;
 
 #[cfg(feature = "aes")]
 use crate::symmetric_aes::*;
@@ -17,21 +18,20 @@ pub type Stream256State = KeccakState;
 #[cfg(feature = "aes")]
 pub type Stream256State = Aes256ctrCtx;
 
+#[cfg(feature = "aes")]
+pub const STREAM128_BLOCKBYTES: usize = AES256CTR_BLOCKBYTES;
+#[cfg(not(feature = "aes"))]
+pub const STREAM128_BLOCKBYTES: usize = SHAKE128_RATE;
 
-pub const STREAM128_BLOCKBYTES: usize = if cfg!(feature = "aes") {
-  AES256CTR_BLOCKBYTES
-} else {
-  SHAKE128_RATE
-};
-pub const STREAM256_BLOCKBYTES: usize = if cfg!(feature = "aes") {
-  AES256CTR_BLOCKBYTES
-} else {
-  SHAKE256_RATE
-};
+#[cfg(feature = "aes")]
+pub const STREAM256_BLOCKBYTES: usize = AES256CTR_BLOCKBYTES;
+#[cfg(not(feature = "aes"))]
+pub const STREAM256_BLOCKBYTES: usize = SHAKE256_RATE;
 
 pub fn _crh(out: &mut [u8], input: &[u8], inbytes: usize) {
   shake256(out, CRHBYTES, input, inbytes)
 }
+
 pub fn stream128_init(
   state: &mut Stream128State,
   seed:  &[u8],
