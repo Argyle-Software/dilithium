@@ -16,5 +16,9 @@ for mode in ${MODE[@]}; do
 
   announce "Dilithium $mode AES"
   cargo test --features "$mode aes KAT"
+
+  announce "Dilithium $mode Random Signing"
+  cargo test --features "$mode random_signing"
 done
+
 
