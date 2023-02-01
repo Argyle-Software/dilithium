@@ -1,12 +1,9 @@
-use crate::{
-  params::*,
-  fips202::*
-};
+use crate::{fips202::*, params::*};
 
 pub fn dilithium_shake128_stream_init(
   state: &mut KeccakState,
   seed: &[u8],
-  nonce: u16
+  nonce: u16,
 )
 {
   let t = [nonce as u8, (nonce >> 8) as u8];
@@ -19,7 +16,7 @@ pub fn dilithium_shake128_stream_init(
 pub fn dilithium_shake256_stream_init(
   state: &mut KeccakState,
   seed: &[u8],
-  nonce: u16
+  nonce: u16,
 )
 {
   let t = [nonce as u8, (nonce >> 8) as u8];
