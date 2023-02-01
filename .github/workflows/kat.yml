@@ -24,4 +24,6 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
 
       - name: KAT Matrix
-        run: ./tests/test_matrix.sh
+        shell: bash
+        working-directory: tests
+        run: chmod +x test_matrix.sh && ./test_matrix.sh
