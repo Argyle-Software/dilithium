@@ -88,13 +88,24 @@ By default this library uses Dilithium3
 
 ## Testing 
 
-To run the known answer tests, you'll need to enable the `dilithium_kat` config flag eg.
+To run the known answer tests, you'll need to enable the `dilithium_kat` in `RUSTFLAGS` eg.
 
 ```shell
 RUSTFLAGS="--cfg dilithium_kat" cargo test
 ```
 
 To run through all possible features use the [`test_matrix.sh`](./tests/test_matrix.sh) script.
+
+---
+
+# Benchmarking
+
+This library uses the criterion benchmarking suite. To use you must enable
+`bench` eg.
+
+```shell
+RUSTFLAGS="--cfg bench" cargo bench
+```
 
 ---
 

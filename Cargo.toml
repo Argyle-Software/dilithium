@@ -17,6 +17,13 @@ rand = "0.8.5"
 [dev-dependencies]
 pqc_core = {version = "0.1.0", features = ["load"]}
 
+[target.'cfg(bench)'.dev-dependencies.criterion]
+criterion = "0.4.0"
+
+[[bench]]
+name = "api"
+harness = false
+
 [features]
 # By default this library uses mode3, also called Dilithium3
 mode2 = []
