@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        toolchain: [stable, nightly, 1.50.0] # MSRV
+        toolchain: [stable, 1.50.0] # MSRV
       
     runs-on: ${{ matrix.os }}
     steps:
