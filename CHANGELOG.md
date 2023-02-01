@@ -1,3 +1,7 @@
+## 0.1.1 - 2023-2-2
+
+* Refactor: Consolidated symmetric modules
+
 ## 0.1.0 - 2023-2-1
 
 Initial release
