@@ -6,19 +6,26 @@ description = "A post-quantum cryptographic signature scheme based on the hardne
 edition = "2018"
 categories = ["cryptography"]
 keywords = ["signature", "post-quantum", "signing"]
+rust-version = "1.50"
 
 [dependencies]
-rand = "0.7.3"
+rand = "0.8.5"
 
 [dev-dependencies]
 pqc_core = {version = "0.1.0", features = ["load"]}
 
-# By default this library uses mode3, also called Dilithium3
 [features]
+# By default this library uses mode3, also called Dilithium3
 mode2 = []
 mode3 = []
 mode5 = []
-aes = []
-random_signing = []
 
-KAT = []
+# Enables AES mode which uses AES-256 in counter mode instead of SHAKE
+aes = []
+
+# Produces a random signature everytime when signing the same message.
+# One may want to consider randomized signatures in situations where the side channel
+# attacks exploiting determinism are applicable. Another situation
+# where one may want to avoid determinism is when the signer does not wish to reveal the
+# message that is being signed.
+random_signing = []
