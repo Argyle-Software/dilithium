@@ -1,7 +1,6 @@
 #[cfg(feature = "aes")]
 mod aes256ctr;
 mod api;
-// #[cfg(not(feature = "aes"))]
 mod fips202;
 mod ntt;
 mod poly;
@@ -22,7 +21,7 @@ pub use params::*;
 
 pub use api::*;
 
-#[cfg(feature = "KAT")]
+#[cfg(dilithium_kat)]
 pub use sign::{
   crypto_sign_keypair, 
   crypto_sign_signature, 
