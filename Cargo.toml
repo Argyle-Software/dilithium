@@ -1,6 +1,6 @@
 [package]
 name = "pqc_dilithium"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Mitchell Berry <foss@mitchellberry.com>"]
 description = "A post-quantum cryptographic signature scheme based on the hardness of lattice problems over module lattices"
 edition = "2018"
