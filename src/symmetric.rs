@@ -1,13 +1,8 @@
 use crate::fips202::*;
-use crate::params::CRHBYTES;
+use crate::params::{CRHBYTES, SEEDBYTES};
 
 #[cfg(feature = "aes")]
 use crate::aes256ctr::*;
-
-#[cfg(feature = "aes")]
-use crate::symmetric_aes::*;
-#[cfg(not(feature = "aes"))]
-use crate::symmetric_shake::*;
 
 #[cfg(not(feature = "aes"))]
 pub type Stream128State = KeccakState;
@@ -75,4 +70,45 @@ pub fn stream256_squeezeblocks(
 
   #[cfg(feature = "aes")]
   aes256ctr_squeezeblocks(out, outblocks, state);
+}
+
+#[cfg(feature = "aes")]
+pub fn dilithium_aes256ctr_init(
+  state: &mut Aes256ctrCtx,
+  key: &[u8],
+  nonce: u16,
+)
+{
+  let mut expnonce = [0u8; 12];
+  expnonce[0] = nonce as u8;
+  expnonce[1] = (nonce >> 8) as u8;
+  aes256ctr_init(state, key, expnonce);
+}
+
+#[cfg(not(feature = "aes"))]
+pub fn dilithium_shake128_stream_init(
+  state: &mut KeccakState,
+  seed: &[u8],
+  nonce: u16,
+)
+{
+  let t = [nonce as u8, (nonce >> 8) as u8];
+  state.init();
+  shake128_absorb(state, seed, SEEDBYTES);
+  shake128_absorb(state, &t, 2);
+  shake128_finalize(state);
+}
+
+#[cfg(not(feature = "aes"))]
+pub fn dilithium_shake256_stream_init(
+  state: &mut KeccakState,
+  seed: &[u8],
+  nonce: u16,
+)
+{
+  let t = [nonce as u8, (nonce >> 8) as u8];
+  state.init();
+  shake256_absorb(state, seed, CRHBYTES);
+  shake256_absorb(state, &t, 2);
+  shake256_finalize(state);
 }
