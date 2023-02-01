@@ -4,6 +4,7 @@ mod api;
 mod fips202;
 mod ntt;
 mod packing;
+mod params;
 mod poly;
 mod polyvec;
 mod randombytes;
@@ -11,12 +12,6 @@ mod reduce;
 mod rounding;
 mod sign;
 mod symmetric;
-#[cfg(feature = "aes")]
-mod symmetric_aes;
-#[cfg(not(feature = "aes"))]
-mod symmetric_shake;
-
-mod params;
 pub use params::*;
 
 pub use api::*;
