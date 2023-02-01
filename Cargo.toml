@@ -6,6 +6,9 @@ description = "A post-quantum cryptographic signature scheme based on the hardne
 edition = "2018"
 categories = ["cryptography"]
 keywords = ["signature", "post-quantum", "signing"]
+repository = "https://github.com/Argyle-Software/dilithium/"
+license = "MIT OR Apache-2.0"
+exclude = ["tests/KAT"]
 rust-version = "1.50"
 
 [dependencies]
