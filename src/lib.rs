@@ -12,7 +12,7 @@ mod reduce;
 mod rounding;
 mod sign;
 mod symmetric;
-pub use params::*;
+pub use params::{PUBLICKEYBYTES, SECRETKEYBYTES, SIGNBYTES};
 
 pub use api::*;
 
