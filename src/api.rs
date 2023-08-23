@@ -32,7 +32,7 @@ impl Keypair
   /// let secret_key = keys.expose_secret();
   /// assert!(secret_key.len() == SECRETKEYBYTES);
   /// ```
-  pub fn expose_secret(&self) -> &[u8]
+  pub fn expose_secret(&self) -> &[u8;SECRETKEYBYTES]
   {
     &self.secret
   }
