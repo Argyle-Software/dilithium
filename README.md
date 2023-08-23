@@ -83,6 +83,7 @@ By default this library uses Dilithium3
 | mode5          | Uses Dilithium5                                                                                                   |
 | aes            | Uses AES256-CTR instead of SHAKE                                                                                  |
 | random_signing | Enables randomized signing of messages                                                                            |
+| wasm           | For compiling to WASM targets                                                                                     |
 
 ---
 
@@ -108,6 +109,38 @@ RUSTFLAGS="--cfg bench" cargo bench
 ```
 
 ---
+
+## WebAssembly
+
+To compile the wasm files yourself you need to enable the `wasm` feature.
+
+For example, using [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/):
+
+```shell
+wasm-pack build -- --features wasm
+```
+
+Which will export the wasm, javascript and  typescript files into `./pkg//`. 
+
+To compile a different variant into a separate folder: 
+```shell
+wasm-pack build --out-dir pkg_mode5/ -- --features "wasm mode5" 
+```
+
+There is also a basic html demo in the [www](./www/readme.md) folder.
+ 
+From the www folder run: 
+
+```shell
+npm run start
+```
+
+---
+
+### Javascript example
+
+
+
 
 ## Alternatives
 

@@ -45,10 +45,7 @@ impl Keys {
 
 #[wasm_bindgen]
 pub fn verify(sig: Box<[u8]>, msg: Box<[u8]>, public_key: Box<[u8]>) -> bool {
-    match api::verify(&sig, &msg, &public_key){
-        Ok(())=>true,
-        Err(_SignError)=>false
-    }
+    api::verify(&sig, &msg, &public_key).is_ok()
 }
 
 

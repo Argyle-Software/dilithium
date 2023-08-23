@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dilithium Web Assembly Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="./bootstrap.js"></script>
+  </head>
+  <body>
+    <h1><i>pqc_dilithium</i> wasm demo</h1>
+    <code>import * as dilithium from pqc_dilithium</code>
+    <p>
+      <code>dilithium.Params.publicKeyBytes</code>: <b id="pkbytes"></b><br>
+      <code>dilithium.Params.secretKeyBytes</code>: <b id="skbytes"></b><br>
+      <code>dilithium.Params.signBytes</code>: <b id="sbytes"></b>
+    </p>
+    <code>
+      var keys = dilithium.keypair(); <br>
+      const publicKeyAlice = keys.pubkey; <br>
+      const privateKeyAlice = keys.secret; <br>
+    </code>
+    <p>
+      <button id="generatekey">Generate Keypair</button> <br>
+      <div class="box">Public  Key (Output): <input type="text" id="pubkeybox" > </div><br>
+      <div class="box">Private Key (Output): <input type="text" id="privkeybox"></div>
+    </p>
+    <code>
+      var message = new TextEncoder().encode("Hi") <br>
+      var sig = keys.sign(message);
+    </code>
+    <p>
+      <button id="sign">Sign</button> <br>
+      <div class="box">Message (Input): <input type="text" id="msgbox1" ></div><br>
+      <div class="box">Signature (Output): <input type="text" id="signbox1"></div>
+    </p>
+    <code>
+      var result = dilithium.verify(sig,message, publicKeyAlice); <br>
+      assert.equal(result, true); <br>
+    </code>
+    <p>
+      <button id="verify">verify</button>
+      <button id="clear">Clear All</button><br>
+      <div class="box">Public Key (Input): <input type="text" id="pubkeybox2"></div><br> 
+      <div class="box">Message (Input): <input type="text" id="msgbox2" ></div><br>
+      <div class="box">Signature (Input): <input type="text" id="signbox2"></div><br>
+      <div class="box">Signature match (Output): <input type="text" id="result"></div>
+    </p>
+  </body>
+</html>
