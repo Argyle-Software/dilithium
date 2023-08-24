@@ -137,11 +137,6 @@ npm run start
 
 ---
 
-### Javascript example
-
-
-
-
 ## Alternatives
 
 The PQClean project has rust bindings for their C post quantum libraries. 

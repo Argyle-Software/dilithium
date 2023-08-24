@@ -1,0 +1,30 @@
+{
+  "name": "pqc_dilithium",
+  "collaborators": [
+    "Mitchell Berry <foss@mitchellberry.com>"
+  ],
+  "description": "A post-quantum cryptographic signature scheme based on the hardness of lattice problems over module lattices",
+  "version": "0.1.1",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Argyle-Software/dilithium/"
+  },
+  "files": [
+    "pqc_dilithium_bg.wasm",
+    "pqc_dilithium.js",
+    "pqc_dilithium_bg.js",
+    "pqc_dilithium.d.ts"
+  ],
+  "module": "pqc_dilithium.js",
+  "types": "pqc_dilithium.d.ts",
+  "sideEffects": [
+    "./pqc_dilithium.js",
+    "./snippets/*"
+  ],
+  "keywords": [
+    "signature",
+    "post-quantum",
+    "signing"
+  ]
+}
