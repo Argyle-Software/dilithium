@@ -12,7 +12,13 @@ exclude = ["tests/KAT"]
 rust-version = "1.50"
 
 [dependencies]
-rand = "0.8.5"
+rand_core = { version = "0.6.4",  default-features = false }
+getrandom = {version = "0.2.10", features = ["js"], optional = true }
+wasm-bindgen = { version = "0.2.87", optional = true }
+
+[dependencies.rand]
+version = "0.8.5"
+features = ["getrandom"]
 
 [dev-dependencies]
 pqc_core = {version = "0.1.0", features = ["load"]}
@@ -39,3 +45,9 @@ aes = []
 # where one may want to avoid determinism is when the signer does not wish to reveal the
 # message that is being signed.
 random_signing = []
+
+# For compiling to wasm targets 
+wasm = ["wasm-bindgen", "getrandom/js"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
