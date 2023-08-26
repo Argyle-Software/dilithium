@@ -5,23 +5,18 @@
 
 # Dilithium
 [![Build Status](https://github.com/Argyle-Software/dilithium/actions/workflows/kat.yml/badge.svg)](https://github.com/Argyle-Software/dilithium/actions)
-[![Crates](https://img.shields.io/crates/v/pqc-dilithium)](https://crates.io/crates/pqc-dilithium)
 [![License](https://img.shields.io/crates/l/pqc_dilithium)](https://github.com/Argyle-Software/dilithium/blob/master/LICENSE-MIT)
 [![License](https://img.shields.io/crates/l/pqc_dilithium)](https://github.com/Argyle-Software/dilithium/blob/master/LICENSE-APACHE)
 
-A rust implementation of the Dilithium, a KEM standardised by the NIST Post-Quantum Standardization Project.
-
-See the [**features**](#features) section for different options regarding security levels and modes of operation. The default security setting is Dilithium3.
+A rust implementation of Dilithium, a KEM standardised by the NIST Post-Quantum Standardization Project, packaged as a Wasm binary.
 
 It is recommended to use Dilithium in a hybrid system alongside a traditional signature algorithm such as ed25519. 
 
-**Minimum Supported Rust Version: 1.50.0**
 
 ---
-
 ## Installation
 
-this repository is not available on npm at this moment
+This repository is not available on npm at this moment
 
 ## Usage 
 
@@ -49,5 +44,4 @@ assert.equal(result, true)
 assert.equal(pubKey.length, kyber.Params.publicKeyBytes);
 assert.equal(privKey.length, kyber.Params.secretKeyBytes);
 assert.equal(sign.length,  kyber.Params.signBytes);
-
 ```
