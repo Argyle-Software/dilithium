@@ -18,13 +18,10 @@ wasm-bindgen = { version = "0.2.87", optional = true }
 
 [dependencies.rand]
 version = "0.8.5"
-default-features = false
 features = ["getrandom"]
-optional = true
 
 [dev-dependencies]
 pqc_core = {version = "0.1.0", features = ["load"]}
-rand = "0.8.5"
 
 [target.'cfg(bench)'.dev-dependencies.criterion]
 criterion = "0.4.0"
@@ -50,7 +47,7 @@ aes = []
 random_signing = []
 
 # For compiling to wasm targets 
-wasm = ["wasm-bindgen", "getrandom", "rand"]
+wasm = ["wasm-bindgen", "getrandom/js"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

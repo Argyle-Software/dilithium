@@ -99,7 +99,7 @@ To run through all possible features use the [`test_matrix.sh`](./tests/test_mat
 
 ---
 
-# Benchmarking
+## Benchmarking
 
 This library uses the criterion benchmarking suite. To use you must enable
 `bench` eg.
@@ -120,7 +120,7 @@ For example, using [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/):
 wasm-pack build -- --features wasm
 ```
 
-Which will export the wasm, javascript and  typescript files into `./pkg//`. 
+Which will export the wasm, javascript and  typescript files into `./pkg/`. 
 
 To compile a different variant into a separate folder: 
 ```shell
@@ -132,6 +132,7 @@ There is also a basic html demo in the [www](./www/readme.md) folder.
 From the www folder run: 
 
 ```shell
+npm install
 npm run start
 ```
 

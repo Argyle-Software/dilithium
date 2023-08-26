@@ -33,7 +33,7 @@ impl Keys {
 
     #[wasm_bindgen(getter)]
     pub fn secret(&self) -> Box<[u8]> {
-        Box::new(*self.keypair.expose_secret())
+        self.keypair.expose_secret().to_vec().into_boxed_slice()
     }
 
     #[wasm_bindgen]

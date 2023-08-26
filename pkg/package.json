@@ -14,7 +14,9 @@
     "pqc_dilithium_bg.wasm",
     "pqc_dilithium.js",
     "pqc_dilithium_bg.js",
-    "pqc_dilithium.d.ts"
+    "pqc_dilithium.d.ts",
+    "LICENSE-MIT",
+    "LICENSE-APACHE"
   ],
   "module": "pqc_dilithium.js",
   "types": "pqc_dilithium.d.ts",

@@ -20,30 +20,33 @@
       const privateKeyAlice = keys.secret; <br>
     </code>
     <p>
-      <button id="generatekey">Generate Keypair</button> <br>
       <div class="box">Public  Key (Output): <input type="text" id="pubkeybox" > </div><br>
       <div class="box">Private Key (Output): <input type="text" id="privkeybox"></div>
+      <br> 
+      <button id="generatekey">Generate Keypair</button> 
     </p>
     <code>
       var message = new TextEncoder().encode("Hi") <br>
       var sig = keys.sign(message);
     </code>
     <p>
-      <button id="sign">Sign</button> <br>
       <div class="box">Message (Input): <input type="text" id="msgbox1" ></div><br>
       <div class="box">Signature (Output): <input type="text" id="signbox1"></div>
+      <br>
+      <button id="sign">Sign</button> 
     </p>
     <code>
       var result = dilithium.verify(sig,message, publicKeyAlice); <br>
       assert.equal(result, true); <br>
     </code>
     <p>
-      <button id="verify">verify</button>
-      <button id="clear">Clear All</button><br>
       <div class="box">Public Key (Input): <input type="text" id="pubkeybox2"></div><br> 
       <div class="box">Message (Input): <input type="text" id="msgbox2" ></div><br>
       <div class="box">Signature (Input): <input type="text" id="signbox2"></div><br>
       <div class="box">Signature match (Output): <input type="text" id="result"></div>
+      <br>
+      <button id="verify">Verify</button>
+      <button id="clear">Clear All</button>
     </p>
   </body>
 </html>
