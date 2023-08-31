@@ -1,8 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use pqc_dilithium::*;
 
-fn sign_small_msg(c: &mut Criterion)
-{
+fn sign_small_msg(c: &mut Criterion) {
   let keys = Keypair::generate();
   let msg = "Hello".as_bytes();
   c.bench_function("Sign Small Message", |b| {
@@ -10,8 +9,7 @@ fn sign_small_msg(c: &mut Criterion)
   });
 }
 
-fn verify_small_msg(c: &mut Criterion)
-{
+fn verify_small_msg(c: &mut Criterion) {
   let keys = Keypair::generate();
   let msg = "Hello".as_bytes();
   let sig = keys.sign(msg);

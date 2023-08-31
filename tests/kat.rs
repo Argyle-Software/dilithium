@@ -15,8 +15,7 @@ const MODE: u8 = if cfg!(feature = "mode2") {
 const AES: &str = if cfg!(feature = "aes") { "-AES" } else { "" };
 
 #[test]
-fn keypair()
-{
+fn keypair() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);
   let katvec = kats(&mut path.clone(), &filename);
@@ -33,8 +32,7 @@ fn keypair()
 }
 
 #[test]
-pub fn sign()
-{
+pub fn sign() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);
   let katvec = kats(&mut path, &filename);
@@ -49,8 +47,7 @@ pub fn sign()
 }
 
 #[test]
-pub fn verify()
-{
+pub fn verify() {
   let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
   let filename = format!("PQCsignKAT_Dilithium{}{}.rsp", MODE, AES);
   let katvec = kats(&mut path, &filename);

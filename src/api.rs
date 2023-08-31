@@ -2,29 +2,24 @@ use crate::params::{PUBLICKEYBYTES, SECRETKEYBYTES, SIGNBYTES};
 use crate::sign::*;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Keypair
-{
+pub struct Keypair {
   pub public: [u8; PUBLICKEYBYTES],
   secret: [u8; SECRETKEYBYTES],
 }
 
 /// Secret key elided
-impl std::fmt::Debug for Keypair
-{
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-  {
+impl std::fmt::Debug for Keypair {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(f, "public: {:?}\nsecret: <elided>", self.public)
   }
 }
 
-pub enum SignError
-{
+pub enum SignError {
   Input,
   Verify,
 }
 
-impl Keypair
-{
+impl Keypair {
   /// Explicitly expose secret key
   /// ```
   /// # use pqc_dilithium::*;
@@ -32,8 +27,7 @@ impl Keypair
   /// let secret_key = keys.expose_secret();
   /// assert!(secret_key.len() == SECRETKEYBYTES);
   /// ```
-  pub fn expose_secret(&self) -> &[u8]
-  {
+  pub fn expose_secret(&self) -> &[u8] {
     &self.secret
   }
 
@@ -46,8 +40,7 @@ impl Keypair
   /// assert!(keys.public.len() == PUBLICKEYBYTES);
   /// assert!(keys.expose_secret().len() == SECRETKEYBYTES);
   /// ```
-  pub fn generate() -> Keypair
-  {
+  pub fn generate() -> Keypair {
     let mut public = [0u8; PUBLICKEYBYTES];
     let mut secret = [0u8; SECRETKEYBYTES];
     crypto_sign_keypair(&mut public, &mut secret, None);
@@ -64,8 +57,7 @@ impl Keypair
   /// let sig = keys.sign(&msg);
   /// assert!(sig.len() == SIGNBYTES);
   /// ```  
-  pub fn sign(&self, msg: &[u8]) -> [u8; SIGNBYTES]
-  {
+  pub fn sign(&self, msg: &[u8]) -> [u8; SIGNBYTES] {
     let mut sig = [0u8; SIGNBYTES];
     crypto_sign_signature(&mut sig, msg, &self.secret);
     sig
@@ -86,8 +78,7 @@ pub fn verify(
   sig: &[u8],
   msg: &[u8],
   public_key: &[u8],
-) -> Result<(), SignError>
-{
+) -> Result<(), SignError> {
   if sig.len() != SIGNBYTES {
     return Err(SignError::Input);
   }
