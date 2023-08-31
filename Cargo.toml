@@ -1,6 +1,6 @@
 [package]
 name = "pqc_dilithium"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Mitchell Berry <foss@mitchellberry.com>"]
 description = "A post-quantum cryptographic signature scheme based on the hardness of lattice problems over module lattices"
 edition = "2018"
@@ -21,7 +21,7 @@ version = "0.8.5"
 features = ["getrandom"]
 
 [dev-dependencies]
-pqc_core = {version = "0.1.0", features = ["load"]}
+pqc_core = {version = "0.3.0", features = ["load"]}
 
 [target.'cfg(bench)'.dev-dependencies.criterion]
 criterion = "0.4.0"

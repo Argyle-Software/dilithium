@@ -16,7 +16,9 @@ It is recommended to use Dilithium in a hybrid system alongside a traditional si
 ---
 ## Installation
 
-This repository is not available on npm at this moment
+```shell
+npm i pqc-dilithium
+```
 
 ## Usage 
 
