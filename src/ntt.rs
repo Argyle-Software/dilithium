@@ -42,8 +42,7 @@ pub const ZETAS: [i32; N] = [
 ///              additions or subtractions. Output vector is in bitreversed order.
 //
 /// Arguments: - uint32_t p[N]: input/output coefficient array
-pub fn ntt(a: &mut [i32])
-{
+pub fn ntt(a: &mut [i32]) {
   let mut j;
   let mut k = 0usize;
   let mut len = 128;
@@ -76,8 +75,7 @@ pub fn ntt(a: &mut [i32])
 ///              absolute value.
 //
 /// Arguments:   - uint32_t p[N]: input/output coefficient array
-pub fn invntt_tomont(a: &mut [i32])
-{
+pub fn invntt_tomont(a: &mut [i32]) {
   let mut j;
   let mut k = 256usize;
   let mut len = 1;
@@ -106,11 +104,9 @@ pub fn invntt_tomont(a: &mut [i32])
   }
 }
 
-mod tests
-{
+mod tests {
   #[test]
-  fn ntt()
-  {
+  fn ntt() {
     let mut a = [
       -1, 1, -4, -3, -4, 4, 1, 1, 2, 4, 1, 2, -2, 3, 1, 0, -3, 1, -1, -2, 4,
       -4, -1, -3, -4, -3, 3, -3, -1, 0, 0, 2, 3, -4, 3, 4, 1, -3, -1, 3, 0, 0,
@@ -168,8 +164,7 @@ mod tests
   }
 
   #[test]
-  fn invntt_tomont()
-  {
+  fn invntt_tomont() {
     let mut a = [
       -410121, -3439227, -1510274, 1543151, -2293562, -1024787, -1768713,
       3416108, -1829266, -39421, 1553720, 383193, -1303564, 2601404, 178534,

@@ -1,3 +1,7 @@
+## 0.2.0 - 2023-8-31
+
+* Added: Wasm compilation feature and npm package
+
 ## 0.1.1 - 2023-2-2
 
 * Refactor: Consolidated symmetric modules

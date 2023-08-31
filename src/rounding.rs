@@ -5,8 +5,7 @@ use crate::params::*;
 /// Assumes a to be standard representative.
 ///
 /// Returns a1.
-pub fn power2round(a: i32, a0: &mut i32) -> i32
-{
+pub fn power2round(a: i32, a0: &mut i32) -> i32 {
   let a1 = (a + (1 << (D - 1)) - 1) >> D;
   *a0 = a - (a1 << D);
   return a1;
@@ -19,8 +18,7 @@ pub fn power2round(a: i32, a0: &mut i32) -> i32
 /// representative.
 ///
 /// Returns a1.
-pub fn decompose(a0: &mut i32, a: i32) -> i32
-{
+pub fn decompose(a0: &mut i32, a: i32) -> i32 {
   let mut a1 = (a + 127) >> 7;
   if GAMMA2 == (Q - 1) / 32 {
     a1 = (a1 * 1025 + (1 << 21)) >> 22;
@@ -38,8 +36,7 @@ pub fn decompose(a0: &mut i32, a: i32) -> i32
 /// input element overflow into the high bits.
 ///
 /// Returns 1 if overflow.
-pub fn make_hint(a0: i32, a1: i32) -> u8
-{
+pub fn make_hint(a0: i32, a1: i32) -> u8 {
   if a0 > GAMMA2_I32 || a0 < -GAMMA2_I32 || (a0 == -GAMMA2_I32 && a1 != 0) {
     return 1;
   }
@@ -49,8 +46,7 @@ pub fn make_hint(a0: i32, a1: i32) -> u8
 /// Correct high bits according to hint.
 ///
 /// Returns corrected high bits.
-pub fn use_hint(a: i32, hint: u8) -> i32
-{
+pub fn use_hint(a: i32, hint: u8) -> i32 {
   let mut a0 = 0i32;
   let a1 = decompose(&mut a0, a);
   if hint == 0 {

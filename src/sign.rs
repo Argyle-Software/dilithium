@@ -7,8 +7,7 @@ pub fn crypto_sign_keypair(
   pk: &mut [u8],
   sk: &mut [u8],
   seed: Option<&[u8]>,
-) -> u8
-{
+) -> u8 {
   let mut init_seed = [0u8; SEEDBYTES];
   match seed {
     Some(x) => init_seed.copy_from_slice(x),
@@ -65,8 +64,7 @@ pub fn crypto_sign_keypair(
   return 0;
 }
 
-pub fn crypto_sign_signature(sig: &mut [u8], m: &[u8], sk: &[u8])
-{
+pub fn crypto_sign_signature(sig: &mut [u8], m: &[u8], sk: &[u8]) {
   // `key` and `mu` are concatenated
   let mut keymu = [0u8; SEEDBYTES + CRHBYTES];
 
@@ -178,8 +176,7 @@ pub fn crypto_sign_verify(
   sig: &[u8],
   m: &[u8],
   pk: &[u8],
-) -> Result<(), SignError>
-{
+) -> Result<(), SignError> {
   let mut buf = [0u8; K * POLYW1_PACKEDBYTES];
   let mut rho = [0u8; SEEDBYTES];
   let mut mu = [0u8; CRHBYTES];

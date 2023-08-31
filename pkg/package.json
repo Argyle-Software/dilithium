@@ -1,10 +1,10 @@
 {
-  "name": "pqc_dilithium",
+  "name": "pqc-dilithium",
   "collaborators": [
     "Mitchell Berry <foss@mitchellberry.com>"
   ],
-  "description": "A post-quantum cryptographic signature scheme based on the hardness of lattice problems over module lattices",
-  "version": "0.1.1",
+  "description": "A post-quantum cryptographic signature scheme written in Rust and compiled to a Wasm binary",
+  "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",

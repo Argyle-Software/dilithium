@@ -5,23 +5,19 @@ use crate::{
 const D_SHL: i32 = 1i32 << (D - 1);
 
 #[derive(Copy, Clone)]
-pub struct Poly
-{
+pub struct Poly {
   pub coeffs: [i32; N],
 }
 
-impl Default for Poly
-{
-  fn default() -> Self
-  {
+impl Default for Poly {
+  fn default() -> Self {
     Poly { coeffs: [0i32; N] }
   }
 }
 
 /// Inplace reduction of all coefficients of polynomial to
 /// representative in [0,2*Q].
-pub fn poly_reduce(a: &mut Poly)
-{
+pub fn poly_reduce(a: &mut Poly) {
   for i in 0..N {
     a.coeffs[i] = reduce32(a.coeffs[i]);
   }
@@ -29,16 +25,14 @@ pub fn poly_reduce(a: &mut Poly)
 
 /// For all coefficients of in/out polynomial add Q if
 /// coefficient is negative.
-pub fn poly_caddq(a: &mut Poly)
-{
+pub fn poly_caddq(a: &mut Poly) {
   for i in 0..N {
     a.coeffs[i] = caddq(a.coeffs[i]);
   }
 }
 
 /// Add polynomials. No modular reduction is performed.
-pub fn poly_add(c: &mut Poly, b: &Poly)
-{
+pub fn poly_add(c: &mut Poly, b: &Poly) {
   for i in 0..N {
     c.coeffs[i] = c.coeffs[i] + b.coeffs[i];
   }
@@ -47,8 +41,7 @@ pub fn poly_add(c: &mut Poly, b: &Poly)
 /// Subtract polynomials. Assumes coefficients of second input
 /// polynomial to be less than 2*Q. No modular reduction is
 /// performed.
-pub fn poly_sub(c: &mut Poly, b: &Poly)
-{
+pub fn poly_sub(c: &mut Poly, b: &Poly) {
   for i in 0..N {
     c.coeffs[i] = c.coeffs[i] - b.coeffs[i];
   }
@@ -56,8 +49,7 @@ pub fn poly_sub(c: &mut Poly, b: &Poly)
 
 /// Multiply polynomial by 2^D without modular reduction. Assumes
 /// input coefficients to be less than 2^{32-D}.
-pub fn poly_shiftl(a: &mut Poly)
-{
+pub fn poly_shiftl(a: &mut Poly) {
   for i in 0..N {
     a.coeffs[i] <<= D;
   }
@@ -65,16 +57,14 @@ pub fn poly_shiftl(a: &mut Poly)
 
 /// Inplace forward NTT. Output coefficients can be up to
 /// 16*Q larger than input coefficients.
-pub fn poly_ntt(a: &mut Poly)
-{
+pub fn poly_ntt(a: &mut Poly) {
   ntt(&mut a.coeffs);
 }
 
 /// Inplace inverse NTT and multiplication by 2^{32}.
 /// Input coefficients need to be less than 2*Q.
 /// Output coefficients are less than 2*Q.
-pub fn poly_invntt_tomont(a: &mut Poly)
-{
+pub fn poly_invntt_tomont(a: &mut Poly) {
   invntt_tomont(&mut a.coeffs);
 }
 
@@ -82,8 +72,7 @@ pub fn poly_invntt_tomont(a: &mut Poly)
 /// representation and multiplication of resulting polynomial
 /// by 2^{-32}. Output coefficients are less than 2*Q if input
 /// coefficient are less than 22*Q.
-pub fn poly_pointwise_montgomery(c: &mut Poly, a: &Poly, b: &Poly)
-{
+pub fn poly_pointwise_montgomery(c: &mut Poly, a: &Poly, b: &Poly) {
   for i in 0..N {
     c.coeffs[i] = montgomery_reduce((a.coeffs[i] as i64) * b.coeffs[i] as i64);
   }
@@ -93,8 +82,7 @@ pub fn poly_pointwise_montgomery(c: &mut Poly, a: &Poly, b: &Poly)
 /// compute c0, c1 such that c mod Q = c1*2^D + c0
 /// with -2^{D-1} < c0 <= 2^{D-1}. Assumes coefficients to be
 /// standard representatives.
-pub fn poly_power2round(a1: &mut Poly, a0: &mut Poly)
-{
+pub fn poly_power2round(a1: &mut Poly, a0: &mut Poly) {
   for i in 0..N {
     a1.coeffs[i] = power2round(a1.coeffs[i], &mut a0.coeffs[i]);
   }
@@ -105,8 +93,7 @@ pub fn poly_power2round(a1: &mut Poly, a0: &mut Poly)
 /// with -ALPHA/2 < c0 <= ALPHA/2 except c1 = (Q-1)/ALPHA where we
 /// set c1 = 0 and -ALPHA/2 <= c0 = c mod Q - Q < 0.
 /// Assumes coefficients to be standard representatives.
-pub fn poly_decompose(a1: &mut Poly, a0: &mut Poly)
-{
+pub fn poly_decompose(a1: &mut Poly, a0: &mut Poly) {
   for i in 0..N {
     a1.coeffs[i] = decompose(&mut a0.coeffs[i], a1.coeffs[i]);
   }
@@ -115,8 +102,7 @@ pub fn poly_decompose(a1: &mut Poly, a0: &mut Poly)
 /// Compute hint polynomial. The coefficients of which indicate
 /// whether the low bits of the corresponding coefficient of
 /// the input polynomial overflow into the high bits.
-pub fn poly_make_hint(h: &mut Poly, a0: &Poly, a1: &Poly) -> i32
-{
+pub fn poly_make_hint(h: &mut Poly, a0: &Poly, a1: &Poly) -> i32 {
   let mut s = 0i32;
   for i in 0..N {
     h.coeffs[i] = make_hint(a0.coeffs[i], a1.coeffs[i]) as i32;
@@ -130,8 +116,7 @@ pub fn poly_make_hint(h: &mut Poly, a0: &Poly, a1: &Poly) -> i32
 /// Arguments:   - poly *b: pointer to output polynomial with corrected high bits
 /// - const poly *a: pointer to input polynomial
 /// - const poly *h: pointer to input hint polynomial
-pub fn poly_use_hint(b: &mut Poly, h: &Poly)
-{
+pub fn poly_use_hint(b: &mut Poly, h: &Poly) {
   for i in 0..N {
     b.coeffs[i] = use_hint(b.coeffs[i], h.coeffs[i] as u8);
   }
@@ -140,8 +125,7 @@ pub fn poly_use_hint(b: &mut Poly, h: &Poly)
 /// Check infinity norm of polynomial against given bound.
 /// Assumes input coefficients to be standard representatives.
 /// Returns 0 if norm is strictly smaller than B and 1 otherwise.
-pub fn poly_chknorm(a: &Poly, b: i32) -> u8
-{
+pub fn poly_chknorm(a: &Poly, b: i32) -> u8 {
   // It is ok to leak which coefficient violates the bound since
   // the probability for each coefficient is independent of secret
   // data but we must not leak the sign of the centralized representative.
@@ -166,8 +150,7 @@ pub fn poly_chknorm(a: &Poly, b: i32) -> u8
 /// performing rejection sampling on array of random bytes.
 /// Returns number of sampled coefficients. Can be smaller than len if not enough
 /// random bytes were given.
-pub fn rej_uniform(a: &mut [i32], len: u32, buf: &[u8], buflen: usize) -> u32
-{
+pub fn rej_uniform(a: &mut [i32], len: u32, buf: &[u8], buflen: usize) -> u32 {
   let (mut ctr, mut pos) = (0usize, 0usize);
   let mut t;
   while ctr < len as usize && pos + 3 <= buflen {
@@ -193,8 +176,7 @@ const POLY_UNIFORM_NBLOCKS: usize =
 /// Sample polynomial with uniformly random coefficients
 /// in [0, Q-1] by performing rejection sampling using the
 /// output stream of SHAKE256(seed|nonce) or AES256CTR(seed,nonce).
-pub fn poly_uniform(a: &mut Poly, seed: &[u8], nonce: u16)
-{
+pub fn poly_uniform(a: &mut Poly, seed: &[u8], nonce: u16) {
   let mut buflen = POLY_UNIFORM_NBLOCKS * STREAM128_BLOCKBYTES;
   let mut buf = [0u8; POLY_UNIFORM_NBLOCKS * STREAM128_BLOCKBYTES + 2];
   let mut state = Stream128State::default();
@@ -222,8 +204,7 @@ pub fn poly_uniform(a: &mut Poly, seed: &[u8], nonce: u16)
 
 /// Sample uniformly random coefficients in [-ETA, ETA] by
 /// performing rejection sampling using array of random bytes.
-pub fn rej_eta(a: &mut [i32], len: usize, buf: &[u8], buflen: usize) -> u32
-{
+pub fn rej_eta(a: &mut [i32], len: usize, buf: &[u8], buflen: usize) -> u32 {
   let (mut ctr, mut pos) = (0usize, 0usize);
   let (mut t0, mut t1);
   while ctr < len && pos < buflen {
@@ -265,8 +246,7 @@ const POLY_UNIFORM_ETA_NBLOCKS: usize = if ETA == 2 {
   (227 + STREAM256_BLOCKBYTES - 1) / STREAM256_BLOCKBYTES
 };
 
-pub fn poly_uniform_eta(a: &mut Poly, seed: &[u8], nonce: u16)
-{
+pub fn poly_uniform_eta(a: &mut Poly, seed: &[u8], nonce: u16) {
   let buflen = POLY_UNIFORM_ETA_NBLOCKS * STREAM256_BLOCKBYTES;
   let mut buf = [0u8; POLY_UNIFORM_ETA_NBLOCKS * STREAM256_BLOCKBYTES];
   let mut state = Stream256State::default();
@@ -297,8 +277,7 @@ const POLY_UNIFORM_GAMMA1_NBLOCKS: usize =
 /// in [-(GAMMA1 - 1), GAMMA1 - 1] by performing rejection
 /// sampling on output stream of SHAKE256(seed|nonce)
 /// or AES256CTR(seed,nonce).
-pub fn poly_uniform_gamma1(a: &mut Poly, seed: &[u8], nonce: u16)
-{
+pub fn poly_uniform_gamma1(a: &mut Poly, seed: &[u8], nonce: u16) {
   let mut buf = [0u8; POLY_UNIFORM_GAMMA1_NBLOCKS * STREAM256_BLOCKBYTES];
   let mut state = Stream256State::default();
 
@@ -314,8 +293,7 @@ pub fn poly_uniform_gamma1(a: &mut Poly, seed: &[u8], nonce: u16)
 /// Implementation of H. Samples polynomial with TAU nonzero
 /// coefficients in {-1,1} using the output stream of
 /// SHAKE256(seed).
-pub fn poly_challenge(c: &mut Poly, seed: &[u8])
-{
+pub fn poly_challenge(c: &mut Poly, seed: &[u8]) {
   let mut _signs = 0u64;
   let mut buf = [0u8; SHAKE256_RATE];
   let mut state = KeccakState::default(); //shake256_init
@@ -351,8 +329,7 @@ pub fn poly_challenge(c: &mut Poly, seed: &[u8])
 
 /// Bit-pack polynomial with coefficients in [-ETA,ETA].
 /// Input coefficients are assumed to lie in [Q-ETA,Q+ETA].
-pub fn polyeta_pack(r: &mut [u8], a: &Poly)
-{
+pub fn polyeta_pack(r: &mut [u8], a: &Poly) {
   let mut t = [0u8; 8];
   if ETA == 2 {
     for i in 0..N / 8 {
@@ -379,8 +356,7 @@ pub fn polyeta_pack(r: &mut [u8], a: &Poly)
 }
 
 /// Unpack polynomial with coefficients in [-ETA,ETA].
-pub fn polyeta_unpack(r: &mut Poly, a: &[u8])
-{
+pub fn polyeta_unpack(r: &mut Poly, a: &[u8]) {
   if ETA == 2 {
     for i in 0..N / 8 {
       r.coeffs[8 * i + 0] = (a[3 * i + 0] & 0x07) as i32;
@@ -415,8 +391,7 @@ pub fn polyeta_unpack(r: &mut Poly, a: &[u8])
 
 /// Bit-pack polynomial t1 with coefficients fitting in 10 bits.
 /// Input coefficients are assumed to be standard representatives.
-pub fn polyt1_pack(r: &mut [u8], a: &Poly)
-{
+pub fn polyt1_pack(r: &mut [u8], a: &Poly) {
   for i in 0..N / 4 {
     r[5 * i + 0] = (a.coeffs[4 * i + 0] >> 0) as u8;
     r[5 * i + 1] =
@@ -431,8 +406,7 @@ pub fn polyt1_pack(r: &mut [u8], a: &Poly)
 
 /// Unpack polynomial t1 with 9-bit coefficients.
 /// Output coefficients are standard representatives.
-pub fn polyt1_unpack(r: &mut Poly, a: &[u8])
-{
+pub fn polyt1_unpack(r: &mut Poly, a: &[u8]) {
   for i in 0..N / 4 {
     r.coeffs[4 * i + 0] = (((a[5 * i + 0] >> 0) as u32
       | (a[5 * i + 1] as u32) << 8)
@@ -450,8 +424,7 @@ pub fn polyt1_unpack(r: &mut Poly, a: &[u8])
 }
 
 /// Bit-pack polynomial t0 with coefficients in [-2^{D-1}, 2^{D-1}].
-pub fn polyt0_pack(r: &mut [u8], a: &Poly)
-{
+pub fn polyt0_pack(r: &mut [u8], a: &Poly) {
   let mut t = [0i32; 8];
 
   for i in 0..N / 8 {
@@ -489,8 +462,7 @@ pub fn polyt0_pack(r: &mut [u8], a: &Poly)
 
 /// Unpack polynomial t0 with coefficients in ]-2^{D-1}, 2^{D-1}].
 /// Output coefficients lie in ]Q-2^{D-1},Q+2^{D-1}].
-pub fn polyt0_unpack(r: &mut Poly, a: &[u8])
-{
+pub fn polyt0_unpack(r: &mut Poly, a: &[u8]) {
   for i in 0..N / 8 {
     r.coeffs[8 * i + 0] = a[13 * i + 0] as i32;
     r.coeffs[8 * i + 0] |= (a[13 * i + 1] as i32) << 8;
@@ -542,8 +514,7 @@ pub fn polyt0_unpack(r: &mut Poly, a: &[u8])
 /// Bit-pack polynomial z with coefficients
 /// in [-(GAMMA1 - 1), GAMMA1 - 1].
 /// Input coefficients are assumed to be standard representatives.*
-pub fn polyz_pack(r: &mut [u8], a: &Poly)
-{
+pub fn polyz_pack(r: &mut [u8], a: &Poly) {
   let mut t = [0i32; 4];
   if GAMMA1 == (1 << 17) {
     for i in 0..N / 4 {
@@ -583,8 +554,7 @@ pub fn polyz_pack(r: &mut [u8], a: &Poly)
 /// Unpack polynomial z with coefficients
 /// in [-(GAMMA1 - 1), GAMMA1 - 1].
 /// Output coefficients are standard representatives.
-pub fn polyz_unpack(r: &mut Poly, a: &[u8])
-{
+pub fn polyz_unpack(r: &mut Poly, a: &[u8]) {
   if GAMMA1 == (1 << 17) {
     for i in 0..N / 4 {
       r.coeffs[4 * i + 0] = a[9 * i + 0] as i32;
@@ -632,8 +602,7 @@ pub fn polyz_unpack(r: &mut Poly, a: &[u8])
 
 /// Bit-pack polynomial w1 with coefficients in [0, 15].
 /// Input coefficients are assumed to be standard representatives.
-pub fn polyw1_pack(r: &mut [u8], a: &Poly)
-{
+pub fn polyw1_pack(r: &mut [u8], a: &Poly) {
   if GAMMA2 == (Q - 1) / 88 {
     for i in 0..N / 4 {
       r[3 * i + 0] = a.coeffs[4 * i + 0] as u8;
