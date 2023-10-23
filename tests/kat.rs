@@ -2,6 +2,7 @@
 
 use pqc_core::load::*;
 use pqc_dilithium::*;
+use rand_core::OsRng;
 use std::path::PathBuf;
 
 const MODE: u8 = if cfg!(feature = "mode2") {
@@ -25,7 +26,8 @@ fn keypair() {
     let sk = kat.sk.clone();
     let mut pk2 = [0u8; PUBLICKEYBYTES];
     let mut sk2 = [0u8; SECRETKEYBYTES];
-    crypto_sign_keypair(&mut pk2, &mut sk2, Some(&bufvec[i]));
+    crypto_sign_keypair(&mut pk2, &mut sk2, &mut OsRng, Some(&bufvec[i]))
+      .unwrap();
     assert_eq!(pk, pk2);
     assert_eq!(sk, sk2);
   }
@@ -41,7 +43,7 @@ pub fn sign() {
     let msg = kat.msg.clone();
     let sk = kat.sk.clone();
     let mut sig = vec![0u8; SIGNBYTES];
-    crypto_sign_signature(&mut sig, &msg, &sk);
+    crypto_sign_signature(&mut sig, &msg, &sk, &mut OsRng).unwrap();
     assert_eq!(sm[..SIGNBYTES], sig);
   }
 }

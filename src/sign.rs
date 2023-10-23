@@ -1,17 +1,22 @@
 use crate::{
-  fips202::*, packing::*, params::*, poly::*, polyvec::*, randombytes::*,
-  SignError,
+  error::DilithiumError, fips202::*, packing::*, params::*, poly::*,
+  polyvec::*, rng::*,
 };
+use rand_core::{CryptoRng, RngCore};
 
-pub fn crypto_sign_keypair(
+pub fn crypto_sign_keypair<R>(
   pk: &mut [u8],
   sk: &mut [u8],
+  rng: &mut R,
   seed: Option<&[u8]>,
-) -> u8 {
+) -> Result<(), DilithiumError>
+where
+  R: RngCore + CryptoRng,
+{
   let mut init_seed = [0u8; SEEDBYTES];
   match seed {
     Some(x) => init_seed.copy_from_slice(x),
-    None => randombytes(&mut init_seed, SEEDBYTES),
+    None => randombytes(&mut init_seed, SEEDBYTES, rng)?,
   };
   let mut seedbuf = [0u8; 2 * SEEDBYTES + CRHBYTES];
   let mut tr = [0u8; SEEDBYTES];
@@ -61,10 +66,18 @@ pub fn crypto_sign_keypair(
   shake256(&mut tr, SEEDBYTES, pk, PUBLICKEYBYTES);
   pack_sk(sk, &rho, &tr, &key, &t0, &s1, &s2);
 
-  return 0;
+  Ok(())
 }
 
-pub fn crypto_sign_signature(sig: &mut [u8], m: &[u8], sk: &[u8]) {
+pub fn crypto_sign_signature<R>(
+  sig: &mut [u8],
+  m: &[u8],
+  sk: &[u8],
+  rng: &mut R,
+) -> Result<(), DilithiumError>
+where
+  R: RngCore + CryptoRng,
+{
   // `key` and `mu` are concatenated
   let mut keymu = [0u8; SEEDBYTES + CRHBYTES];
 
@@ -97,7 +110,7 @@ pub fn crypto_sign_signature(sig: &mut [u8], m: &[u8], sk: &[u8]) {
   shake256_squeeze(&mut keymu[SEEDBYTES..], CRHBYTES, &mut state);
 
   if RANDOMIZED_SIGNING {
-    randombytes(&mut rhoprime, CRHBYTES);
+    randombytes(&mut rhoprime, CRHBYTES, rng)?;
   } else {
     shake256(&mut rhoprime, CRHBYTES, &keymu, SEEDBYTES + CRHBYTES);
   }
@@ -168,7 +181,7 @@ pub fn crypto_sign_signature(sig: &mut [u8], m: &[u8], sk: &[u8]) {
 
     // Write signature
     pack_sig(sig, None, &z, &h);
-    return;
+    return Ok(());
   }
 }
 
@@ -176,7 +189,7 @@ pub fn crypto_sign_verify(
   sig: &[u8],
   m: &[u8],
   pk: &[u8],
-) -> Result<(), SignError> {
+) -> Result<(), DilithiumError> {
   let mut buf = [0u8; K * POLYW1_PACKEDBYTES];
   let mut rho = [0u8; SEEDBYTES];
   let mut mu = [0u8; CRHBYTES];
@@ -192,7 +205,7 @@ pub fn crypto_sign_verify(
   let mut state = KeccakState::default(); // shake256_init()
 
   if sig.len() != SIGNBYTES {
-    return Err(SignError::Input);
+    return Err(DilithiumError::Input);
   }
 
   unpack_pk(&mut rho, &mut t1, pk);
@@ -200,7 +213,7 @@ pub fn crypto_sign_verify(
     return Err(e);
   }
   if polyvecl_chknorm(&z, (GAMMA1 - BETA) as i32) > 0 {
-    return Err(SignError::Input);
+    return Err(DilithiumError::Input);
   }
 
   // Compute CRH(CRH(rho, t1), msg)
@@ -240,7 +253,7 @@ pub fn crypto_sign_verify(
   shake256_squeeze(&mut c2, SEEDBYTES, &mut state);
   // Doesn't require constant time equality check
   if c != c2 {
-    Err(SignError::Verify)
+    Err(DilithiumError::Verify)
   } else {
     Ok(())
   }

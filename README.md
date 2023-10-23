@@ -13,7 +13,7 @@ A rust implementation of the Dilithium, a KEM standardised by the NIST Post-Quan
 
 See the [**features**](#features) section for different options regarding security levels and modes of operation. The default security setting is Dilithium3.
 
-It is recommended to use Dilithium in a hybrid system alongside a traditional signature algorithm such as ed25519. 
+It is recommended to use Dilithium in a hybrid system alongside a traditional signature algorithm such as ed25519.
 
 **Minimum Supported Rust Version: 1.50.0**
 
@@ -23,25 +23,27 @@ It is recommended to use Dilithium in a hybrid system alongside a traditional si
 
 ```shell
 cargo add pqc_dilithium
-``` 
+```
 
-## Usage 
+## Usage
 
 ```rust
 use pqc_dilithium::*;
+use rand_core::OsRng;
 ```
 
 ### Key Generation
 ```rust
-let keys = Keypair::generate();
+use rand_core::
+let keys = Keypair::generate(&mut OsRng);
 assert!(keys.public.len() == PUBLICKEYBYTES);
 assert!(keys.expose_secret().len() == SECRETKEYBYTES);
 ```
 
-### Signing 
+### Signing
 ```rust
 let msg = "Hello".as_bytes();
-let sig = keys.sign(&msg);
+let sig = keys.sign(&msg, &mut OsRng);
 assert!(sig.len() == SIGNBYTES);
 ```
 
@@ -55,7 +57,7 @@ assert!(sig_verify.is_ok());
 
 ## AES mode
 
-Dilithium-AES, that uses AES-256 in counter mode instead of SHAKE to 
+Dilithium-AES, that uses AES-256 in counter mode instead of SHAKE to
 expand the matrix and the masking vectors, and to sample the secret polynomials.
 This offers hardware speedups on certain platforms.
 
@@ -87,7 +89,7 @@ By default this library uses Dilithium3
 
 ---
 
-## Testing 
+## Testing
 
 To run the known answer tests, you'll need to enable the `dilithium_kat` in `RUSTFLAGS` eg.
 
@@ -120,16 +122,16 @@ For example, using [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/):
 wasm-pack build -- --features wasm
 ```
 
-Which will export the wasm, javascript and  typescript files into `./pkg/`. 
+Which will export the wasm, javascript and  typescript files into `./pkg/`.
 
-To compile a different variant into a separate folder: 
+To compile a different variant into a separate folder:
 ```shell
-wasm-pack build --out-dir pkg_mode5/ -- --features "wasm mode5" 
+wasm-pack build --out-dir pkg_mode5/ -- --features "wasm mode5"
 ```
 
 There is also a basic html demo in the [www](./www/readme.md) folder.
- 
-From the www folder run: 
+
+From the www folder run:
 
 ```shell
 npm install
@@ -140,11 +142,11 @@ npm run start
 
 ## Alternatives
 
-The PQClean project has rust bindings for their C post quantum libraries. 
+The PQClean project has rust bindings for their C post quantum libraries.
 
 https://github.com/rustpq/pqcrypto/tree/main/pqcrypto-dilithium
 
---- 
+---
 
 ## About
 
@@ -152,7 +154,7 @@ Dilithium is a digital signature scheme that is strongly secure under chosen mes
 
 The official website: https://pq-crystals.org/dilithium/
 
-Authors of the Dilithium Algorithm: 
+Authors of the Dilithium Algorithm:
 
 * Roberto Avanzi, ARM Limited (DE)
 * Joppe Bos, NXP Semiconductors (BE)
