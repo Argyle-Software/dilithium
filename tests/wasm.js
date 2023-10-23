@@ -2,7 +2,7 @@
 
 // Uses CommonJS modules
 // Package needs to be built for node:
-// wasm-pack build --target nodejs -- features wasm
+// wasm-pack build --target nodejs -- --features wasm
 const dilithium = require("../pkg/pqc_dilithium");
 const assert = require("assert");
 

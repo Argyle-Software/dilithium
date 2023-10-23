@@ -1,4 +1,4 @@
-use crate::{params::*, poly::*, polyvec::*, SignError};
+use crate::{error::DilithiumError, params::*, poly::*, polyvec::*};
 
 /// Bit-pack public key pk = (rho, t1).
 pub fn pack_pk(pk: &mut [u8], rho: &[u8], t1: &Polyveck) {
@@ -123,7 +123,7 @@ pub fn unpack_sig(
   z: &mut Polyvecl,
   h: &mut Polyveck,
   sig: &[u8],
-) -> Result<(), SignError> {
+) -> Result<(), DilithiumError> {
   let mut idx = 0usize;
 
   c[..SEEDBYTES].copy_from_slice(&sig[..SEEDBYTES]);
@@ -138,12 +138,12 @@ pub fn unpack_sig(
   let mut k = 0usize;
   for i in 0..K {
     if sig[idx + OMEGA + i] < k as u8 || sig[idx + OMEGA + i] > OMEGA_U8 {
-      return Err(SignError::Input);
+      return Err(DilithiumError::Input);
     }
     for j in k..sig[idx + OMEGA + i] as usize {
       // Coefficients are ordered for strong unforgeability
       if j > k && sig[idx + j as usize] <= sig[idx + j as usize - 1] {
-        return Err(SignError::Input);
+        return Err(DilithiumError::Input);
       }
       h.vec[i].coeffs[sig[idx + j] as usize] = 1;
     }
@@ -153,7 +153,7 @@ pub fn unpack_sig(
   // Extra indices are zero for strong unforgeability
   for j in k..OMEGA {
     if sig[idx + j as usize] > 0 {
-      return Err(SignError::Input);
+      return Err(DilithiumError::Input);
     }
   }
 

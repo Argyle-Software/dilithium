@@ -12,16 +12,21 @@ pub struct Keys {
 }
 
 #[wasm_bindgen]
-pub fn keypair() -> Keys {
-  Keys {
-    keypair: api::Keypair::generate(),
+pub fn keypair() -> Result<Keys, JsError> {
+  let mut rng = rand::rngs::OsRng {};
+  match api::Keypair::generate(&mut rng) {
+    Ok(keypair) => Ok(Keys { keypair }),
+    Err(error::DilithiumError::RandomBytesGeneration) => {
+      Err(JsError::new("Error trying to fill random bytes"))
+    }
+    _ => Err(JsError::new("The keypair could not be generated")),
   }
 }
 
 #[wasm_bindgen]
 impl Keys {
   #[wasm_bindgen(constructor)]
-  pub fn new() -> Keys {
+  pub fn new() -> Result<Keys, JsError> {
     keypair()
   }
 
@@ -36,8 +41,12 @@ impl Keys {
   }
 
   #[wasm_bindgen]
-  pub fn sign(&self, msg: Box<[u8]>) -> Box<[u8]> {
-    Box::new(self.keypair.sign(&msg))
+  pub fn sign(&self, msg: Box<[u8]>) -> Result<Box<[u8]>, JsValue> {
+    let mut rng = rand::rngs::OsRng {};
+    match self.keypair.sign(&msg, &mut rng) {
+      Ok(signature) => Ok(Box::new(signature)),
+      Err(_) => Err(JsValue::null()),
+    }
   }
 }
 
