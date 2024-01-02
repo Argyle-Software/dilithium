@@ -38,6 +38,21 @@ assert!(keys.public.len() == PUBLICKEYBYTES);
 assert!(keys.expose_secret().len() == SECRETKEYBYTES);
 ```
 
+### Restoring a Keypair
+```rust
+use pqc_dilithium::*;
+use crate::params::{PUBLICKEYBYTES, SECRETKEYBYTES};
+use std::convert::TryInto;
+
+// Assuming you have public and secret key bytes
+let public_bytes: Vec<u8> = vec![0u8; PUBLICKEYBYTES]; // Example byte vectors
+let secret_bytes: Vec<u8> = vec![0u8; SECRETKEYBYTES];
+
+// Restore the keypair
+let restored_keypair = Keypair::new(public_bytes, secret_bytes);
+assert!(restored_keypair.is_ok());
+```
+
 ### Signing 
 ```rust
 let msg = "Hello".as_bytes();

@@ -1,3 +1,5 @@
+use std::convert::TryInto;
+
 use crate::params::{PUBLICKEYBYTES, SECRETKEYBYTES, SIGNBYTES};
 use crate::sign::*;
 
@@ -16,10 +18,38 @@ impl std::fmt::Debug for Keypair {
 
 pub enum SignError {
   Input,
+  ConversionFailed,
   Verify,
 }
 
 impl Keypair {
+  /// Constructs a new `Keypair` from public and secret key bytes.
+  ///
+  /// # Errors
+  /// Returns `SignError::ConversionFailed` if the byte vectors are not of the expected length.
+  ///
+  /// # Example
+  /// ```
+  /// # use pqc_dilithium::*;
+  /// # use crate::params::{PUBLICKEYBYTES, SECRETKEYBYTES};
+  /// let public = vec![0u8; PUBLICKEYBYTES];
+  /// let secret = vec![0u8; SECRETKEYBYTES];
+  /// let keypair = Keypair::new(public, secret);
+  /// assert!(keypair.is_ok());
+  /// ```
+  pub fn new(
+    pub_bytes: Vec<u8>,
+    sec_bytes: Vec<u8>,
+  ) -> Result<Self, SignError> {
+    let public = pub_bytes
+      .try_into()
+      .map_err(|_| SignError::ConversionFailed)?;
+    let secret = sec_bytes
+      .try_into()
+      .map_err(|_| SignError::ConversionFailed)?;
+    Ok(Self { public, secret })
+  }
+
   /// Explicitly expose secret key
   /// ```
   /// # use pqc_dilithium::*;
