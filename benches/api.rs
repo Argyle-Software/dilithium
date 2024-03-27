@@ -14,7 +14,7 @@ fn verify_small_msg(c: &mut Criterion) {
   let msg = "Hello".as_bytes();
   let sig = keys.sign(msg);
   c.bench_function("Verify Small Message", |b| {
-    b.iter(|| verify(black_box(sig), black_box(msg), black_box(&keys.public)))
+    b.iter(|| verify(black_box(sig), black_box(msg), black_box(&keys.public())))
   });
 }
 

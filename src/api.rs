@@ -3,7 +3,7 @@ use crate::sign::*;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Keypair {
-  pub public: [u8; PUBLICKEYBYTES],
+  public: [u8; PUBLICKEYBYTES],
   secret: [u8; SECRETKEYBYTES],
 }
 
@@ -20,6 +20,17 @@ pub enum SignError {
 }
 
 impl Keypair {
+  /// Get public key
+  /// ```
+  /// # use pqc_dilithium::*;
+  /// let keys = Keypair::generate();
+  /// let public_key = keys.public();
+  /// assert!(public_key.len() == PUBLICKEYBYTES);
+  /// ```
+  pub fn public(&self) -> &[u8] {
+    &self.public
+  }
+
   /// Explicitly expose secret key
   /// ```
   /// # use pqc_dilithium::*;
@@ -37,7 +48,7 @@ impl Keypair {
   /// ```
   /// # use pqc_dilithium::*;
   /// let keys = Keypair::generate();
-  /// assert!(keys.public.len() == PUBLICKEYBYTES);
+  /// assert!(keys.public().len() == PUBLICKEYBYTES);
   /// assert!(keys.expose_secret().len() == SECRETKEYBYTES);
   /// ```
   pub fn generate() -> Keypair {
@@ -62,6 +73,16 @@ impl Keypair {
     crypto_sign_signature(&mut sig, msg, &self.secret);
     sig
   }
+
+  pub fn from_bytes(public_key: &[u8], secret_key: &[u8]) -> Self {
+    let mut public = [0u8; PUBLICKEYBYTES];
+    let mut secret = [0u8; SECRETKEYBYTES];
+
+    public.copy_from_slice(public_key);
+    secret.copy_from_slice(secret_key);
+
+    Self { public, secret }
+  }
 }
 
 /// Verify signature using keypair
@@ -72,7 +93,7 @@ impl Keypair {
 /// # let keys = Keypair::generate();
 /// # let msg = [0u8; 32];
 /// # let sig = keys.sign(&msg);
-/// let sig_verify = verify(&sig, &msg, &keys.public);
+/// let sig_verify = verify(&sig, &msg, &keys.public());
 /// assert!(sig_verify.is_ok());
 pub fn verify(
   sig: &[u8],
