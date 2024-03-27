@@ -1,5 +1,7 @@
+use rand_core::CryptoRngCore;
+
 use crate::params::{PUBLICKEYBYTES, SECRETKEYBYTES, SIGNBYTES};
-use crate::sign::*;
+use crate::{sign::*, SEEDBYTES};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Keypair {
@@ -55,6 +57,27 @@ impl Keypair {
     let mut public = [0u8; PUBLICKEYBYTES];
     let mut secret = [0u8; SECRETKEYBYTES];
     crypto_sign_keypair(&mut public, &mut secret, None);
+    Keypair { public, secret }
+  }
+
+  /// Generates a keypair for signing and verification using a rng
+  ///
+  /// Example:
+  /// ```
+  /// # use pqc_dilithium::*;
+  /// # use rand_core::OsRng;
+  /// let keys = Keypair::random(&mut OsRng);
+  /// assert!(keys.public().len() == PUBLICKEYBYTES);
+  /// assert!(keys.expose_secret().len() == SECRETKEYBYTES);
+  /// ```
+  pub fn random(rng: &mut impl CryptoRngCore) -> Keypair {
+    let mut public = [0u8; PUBLICKEYBYTES];
+    let mut secret = [0u8; SECRETKEYBYTES];
+
+    let mut seed = [0u8; SEEDBYTES];
+    rng.fill_bytes(&mut seed);
+
+    crypto_sign_keypair(&mut public, &mut secret, Some(&seed));
     Keypair { public, secret }
   }
 
