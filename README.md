@@ -34,7 +34,7 @@ use pqc_dilithium::*;
 ### Key Generation
 ```rust
 let keys = Keypair::generate();
-assert!(keys.public.len() == PUBLICKEYBYTES);
+assert!(keys.public().len() == PUBLICKEYBYTES);
 assert!(keys.expose_secret().len() == SECRETKEYBYTES);
 ```
 
@@ -47,7 +47,7 @@ assert!(sig.len() == SIGNBYTES);
 
 ### Verification
 ```rust
-let sig_verify = verify(&sig, &msg, &keys.public);
+let sig_verify = verify(&sig, &msg, &keys.public());
 assert!(sig_verify.is_ok());
 ```
 
