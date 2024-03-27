@@ -53,11 +53,11 @@ impl Keypair {
   /// assert!(keys.public().len() == PUBLICKEYBYTES);
   /// assert!(keys.expose_secret().len() == SECRETKEYBYTES);
   /// ```
-  pub fn generate() -> Keypair {
+  pub fn generate() -> Self {
     let mut public = [0u8; PUBLICKEYBYTES];
     let mut secret = [0u8; SECRETKEYBYTES];
     crypto_sign_keypair(&mut public, &mut secret, None);
-    Keypair { public, secret }
+    Self { public, secret }
   }
 
   /// Generates a keypair for signing and verification using a rng
@@ -70,7 +70,7 @@ impl Keypair {
   /// assert!(keys.public().len() == PUBLICKEYBYTES);
   /// assert!(keys.expose_secret().len() == SECRETKEYBYTES);
   /// ```
-  pub fn random(rng: &mut impl CryptoRngCore) -> Keypair {
+  pub fn random(rng: &mut impl CryptoRngCore) -> Self {
     let mut public = [0u8; PUBLICKEYBYTES];
     let mut secret = [0u8; SECRETKEYBYTES];
 
@@ -78,7 +78,7 @@ impl Keypair {
     rng.fill_bytes(&mut seed);
 
     crypto_sign_keypair(&mut public, &mut secret, Some(&seed));
-    Keypair { public, secret }
+    Self { public, secret }
   }
 
   /// Generates a signature for the given message using a keypair
@@ -97,6 +97,19 @@ impl Keypair {
     sig
   }
 
+  /// Get Keypair struct from raw bytes
+  ///
+  /// Example:
+  /// ```
+  /// # use pqc_dilithium::*;
+  /// # let keys = Keypair::generate();
+  /// let public_key = keys.public();
+  /// let secret_key = keys.expose_secret();
+  /// let keys = Keypair::from_bytes(public_key, secret_key);
+  /// # let msg = "Hello".as_bytes();
+  /// # let signature = keys.sign(msg);
+  /// # assert!(verify(&signature, msg, &keys.public()).is_ok());
+  /// ```
   pub fn from_bytes(public_key: &[u8], secret_key: &[u8]) -> Self {
     let mut public = [0u8; PUBLICKEYBYTES];
     let mut secret = [0u8; SECRETKEYBYTES];
